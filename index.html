@@ -365,8 +365,7 @@
   const db = firebase.firestore();
   const reportsRef = db.collection("reports");
 
-  // ===== imgbb API key (เอามาจาก https://api.imgbb.com/) =====
-  const IMGBB_API_KEY = "ใส่_API_KEY_ตรงนี้";
+  const IMGBB_API_KEY = "f90d9a9555ee9262bd7b48e369348cf8";
 
   // แปลงไฟล์รูปเป็น base64 แล้วอัปโหลดไป imgbb เพื่อได้ลิงก์รูปกลับมา
   async function uploadImageToImgbb(file) {
