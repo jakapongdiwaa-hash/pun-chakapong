@@ -1,30 +1,468 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <title>แจ้งของหาย</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แจ้งของหาย - โรงเรียนสรรพวิทยาคม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E3A5F;
+    --navy-deep:#12263F;
+    --gold:#D4A017;
+    --coral:#C9524A;
+    --sage:#4A7C59;
+    --paper:#FBF7EE;
+    --board:#2B4F3A;
+    --ink:#26313A;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    font-family:'Sarabun', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 10% 10%, rgba(255,255,255,0.03), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 4px),
+      var(--board);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+
+  header{
+    text-align:center;
+    padding:56px 20px 40px;
+    color:#fff;
+  }
+
+  header .eyebrow{
+    font-family:'Kanit', sans-serif;
+    letter-spacing:.3em;
+    font-size:12px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+
+  header h1{
+    font-family:'Kanit', sans-serif;
+    font-weight:700;
+    font-size:clamp(28px, 5vw, 44px);
+    margin:0 0 8px;
+    text-shadow:0 2px 0 rgba(0,0,0,.2);
+  }
+
+  header p{
+    margin:0;
+    opacity:.85;
+    font-size:15px;
+  }
+
+  .wrap{
+    max-width:960px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+
+  .card-panel{
+    background:var(--paper);
+    border-radius:14px;
+    padding:32px;
+    box-shadow:0 18px 40px rgba(0,0,0,.28);
+    position:relative;
+  }
+
+  .card-panel::before{
+    content:"";
+    position:absolute;
+    top:-14px; left:50%;
+    transform:translateX(-50%);
+    width:26px; height:26px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #f0d27a, var(--gold));
+    box-shadow:0 4px 8px rgba(0,0,0,.35);
+  }
+
+  .panel-title{
+    font-family:'Kanit', sans-serif;
+    font-weight:600;
+    font-size:20px;
+    color:var(--navy-deep);
+    margin:0 0 20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .panel-title .num{
+    background:var(--navy);
+    color:#fff;
+    width:26px;height:26px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    font-size:13px;
+    font-family:'Sarabun',sans-serif;
+  }
+
+  form{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px 20px;
+  }
+
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.full{grid-column:1 / -1;}
+
+  label{font-size:13px;font-weight:600;color:var(--navy);}
+
+  input[type=text], input[type=url], select{
+    font-family:'Sarabun',sans-serif;
+    font-size:15px;
+    padding:11px 13px;
+    border:1.5px solid #ddd3bd;
+    border-radius:8px;
+    background:#fff;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input:focus, select:focus{border-color:var(--gold);}
+
+  .status-toggle{
+    display:flex;
+    gap:10px;
+  }
+  .status-toggle button{
+    flex:1;
+    padding:11px;
+    border-radius:8px;
+    border:1.5px solid #ddd3bd;
+    background:#fff;
+    font-family:'Sarabun',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    color:#8a8478;
+    transition:.15s;
+  }
+  .status-toggle button.active[data-status="ของหาย"]{
+    background:var(--coral); border-color:var(--coral); color:#fff;
+  }
+  .status-toggle button.active[data-status="เจอของ"]{
+    background:var(--sage); border-color:var(--sage); color:#fff;
+  }
+
+  .submit-btn{
+    grid-column:1 / -1;
+    margin-top:6px;
+    background:var(--navy);
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:9px;
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    cursor:pointer;
+    letter-spacing:.02em;
+    transition:transform .12s, background .15s;
+  }
+  .submit-btn:hover{background:var(--navy-deep); transform:translateY(-1px);}
+  .submit-btn:disabled{opacity:.6; cursor:default; transform:none;}
+
+  .form-msg{
+    grid-column:1/-1;
+    font-size:13px;
+    min-height:18px;
+  }
+  .form-msg.error{color:var(--coral);}
+  .form-msg.ok{color:var(--sage);}
+
+  .board-title{
+    font-family:'Kanit', sans-serif;
+    color:#fff;
+    text-align:center;
+    font-size:22px;
+    font-weight:600;
+    margin:56px 0 28px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:26px;
+  }
+
+  .item-card{
+    background:var(--paper);
+    border-radius:4px;
+    padding:16px 16px 20px;
+    box-shadow:0 10px 20px rgba(0,0,0,.3);
+    position:relative;
+    transform:rotate(var(--tilt, -1.2deg));
+  }
+  .item-card:nth-child(3n+1){--tilt:-1.4deg;}
+  .item-card:nth-child(3n+2){--tilt:1deg;}
+  .item-card:nth-child(3n){--tilt:-0.6deg;}
+
+  .item-card::before{
+    content:"";
+    position:absolute;
+    top:-10px; left:50%;
+    transform:translateX(-50%) rotate(-6deg);
+    width:52px; height:20px;
+    background:rgba(255,255,255,.55);
+    border:1px solid rgba(255,255,255,.7);
+  }
+
+  .item-photo{
+    width:100%;
+    aspect-ratio:4/3;
+    object-fit:cover;
+    border-radius:2px;
+    background:#e7e0cf;
+    display:block;
+    margin-bottom:12px;
+  }
+
+  .item-photo.placeholder{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#a89f8a;
+    font-size:13px;
+  }
+
+  .stamp{
+    position:absolute;
+    top:12px; right:10px;
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.05em;
+    padding:4px 9px;
+    border-radius:3px;
+    transform:rotate(6deg);
+    color:#fff;
+  }
+  .stamp.lost{background:var(--coral);}
+  .stamp.found{background:var(--sage);}
+
+  .item-name{
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--navy-deep);
+    margin:0 0 8px;
+  }
+
+  .item-meta{
+    font-size:13px;
+    color:#5c5648;
+    line-height:1.7;
+    margin:0;
+  }
+  .item-meta b{color:var(--ink);}
+
+  .empty-state{
+    grid-column:1/-1;
+    text-align:center;
+    color:rgba(255,255,255,.75);
+    padding:40px 0;
+    font-size:14px;
+  }
+
+  @media (max-width:600px){
+    form{grid-template-columns:1fr;}
+    .card-panel{padding:22px;}
+  }
+</style>
 </head>
 <body>
-  <h1>ระบบแจ้งของหาย-เจอของ</h1>
-  <p>โรงเรียนสรรพวิทยาคม</p>
 
-  <h2>แจ้งของหาย/เจอของ</h2>
-  <form>
-    <label>ชื่อ-นามสกุล: <input type="text"></label><br>
-    <label>ชื่อสิ่งของที่พบ/หาย: <input type=“text”></label><br>
-    <label>สถานะ:
-      <select>
-        <option>ของหาย</option>
-        <option>เจอของ</option>
-      </select>
-    </label><br>
-    <label>สถานที่: <input type=“text”></label><br>
-    <label>เมื่อเวลา(เช่น15:00): <input type=“text”></label><br>
-    <label>ช่องทางติดต่อ: <input type=“text”></label><br>
-    <button type=“submit”>แจ้งข้อมูล</button>
-  </form>
+<header>
+  <div class="eyebrow">โรงเรียนสรรพวิทยาคม</div>
+  <h1>กระดานแจ้งของหาย</h1>
+  <p>แจ้งของหาย หรือแจ้งว่าเจอของ ให้เพื่อนๆ ได้เห็น</p>
+</header>
 
-  <h2>รายการที่แจ้งไว้</h2>
-  <ul id=“itemList”>
-  </ul>
+<div class="wrap">
+
+  <div class="card-panel">
+    <p class="panel-title"><span class="num">1</span> แจ้งของหาย / เจอของ</p>
+
+    <form id="reportForm">
+      <div class="field">
+        <label for="fName">ชื่อ-นามสกุล</label>
+        <input type="text" id="fName" required>
+      </div>
+
+      <div class="field">
+        <label for="fItem">ชื่อสิ่งของที่พบ/หาย</label>
+        <input type="text" id="fItem" required>
+      </div>
+
+      <div class="field full">
+        <label>สถานะ</label>
+        <div class="status-toggle">
+          <button type="button" data-status="ของหาย" class="active">ของหาย</button>
+          <button type="button" data-status="เจอของ">เจอของ</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fLocation">สถานที่</label>
+        <input type="text" id="fLocation" required>
+      </div>
+
+      <div class="field">
+        <label for="fTime">เมื่อเวลา (เช่น 15:00)</label>
+        <input type="text" id="fTime" required>
+      </div>
+
+      <div class="field">
+        <label for="fContact">ช่องทางติดต่อ</label>
+        <input type="text" id="fContact" required>
+      </div>
+
+      <div class="field">
+        <label for="fImage">ลิงก์รูปภาพ (ไม่บังคับ)</label>
+        <input type="text" id="fImage" placeholder="https://... (เว้นว่างได้)">
+      </div>
+
+      <div class="form-msg" id="formMsg"></div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">แจ้งข้อมูล</button>
+    </form>
+  </div>
+
+  <h2 class="board-title">รายการที่แจ้งไว้</h2>
+
+  <div class="grid" id="itemGrid">
+    <p class="empty-state">กำลังโหลดข้อมูล...</p>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  // ===== Firebase config (จาก Firebase Console ของโปรเจกต์ pun-chakapong248) =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMcc_avCIQsuSzEZAVBltTFJIOrYxdD3Y",
+    authDomain: "pun-chakapong248.firebaseapp.com",
+    projectId: "pun-chakapong248",
+    storageBucket: "pun-chakapong248.firebasestorage.app",
+    messagingSenderId: "449947519610",
+    appId: "1:449947519610:web:6f1f165d01434c0c8ac9c3"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const reportsRef = db.collection("reports");
+
+  // ===== Status toggle =====
+  let currentStatus = "ของหาย";
+  const statusButtons = document.querySelectorAll(".status-toggle button");
+  statusButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      statusButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentStatus = btn.dataset.status;
+    });
+  });
+
+  // ===== Submit form =====
+  const form = document.getElementById("reportForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const formMsg = document.getElementById("formMsg");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    formMsg.textContent = "";
+    formMsg.className = "form-msg";
+
+    const data = {
+      name: document.getElementById("fName").value.trim(),
+      itemName: document.getElementById("fItem").value.trim(),
+      status: currentStatus,
+      location: document.getElementById("fLocation").value.trim(),
+      time: document.getElementById("fTime").value.trim(),
+      contact: document.getElementById("fContact").value.trim(),
+      imageUrl: document.getElementById("fImage").value.trim(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "กำลังบันทึก...";
+
+    try {
+      await reportsRef.add(data);
+      form.reset();
+      statusButtons.forEach(b => b.classList.remove("active"));
+      document.querySelector('[data-status="ของหาย"]').classList.add("active");
+      currentStatus = "ของหาย";
+      formMsg.textContent = "บันทึกข้อมูลเรียบร้อยแล้ว";
+      formMsg.classList.add("ok");
+    } catch (err) {
+      console.error(err);
+      formMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+      formMsg.classList.add("error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "แจ้งข้อมูล";
+    }
+  });
+
+  // ===== Live list of reports =====
+  const itemGrid = document.getElementById("itemGrid");
+
+  reportsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
+    if (snapshot.empty) {
+      itemGrid.innerHTML = '<p class="empty-state">ยังไม่มีรายการที่แจ้งไว้</p>';
+      return;
+    }
+
+    itemGrid.innerHTML = "";
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      const isLost = d.status === "ของหาย";
+
+      const card = document.createElement("div");
+      card.className = "item-card";
+
+      const photoHtml = d.imageUrl
+        ? `<img class="item-photo" src="${escapeHtml(d.imageUrl)}" alt="${escapeHtml(d.itemName || '')}" onerror="this.classList.add('placeholder'); this.removeAttribute('src'); this.alt='ไม่พบรูปภาพ';">`
+        : `<div class="item-photo placeholder">ไม่มีรูปภาพ</div>`;
+
+      card.innerHTML = `
+        <span class="stamp ${isLost ? 'lost' : 'found'}">${escapeHtml(d.status || '')}</span>
+        ${photoHtml}
+        <p class="item-name">${escapeHtml(d.itemName || '(ไม่ระบุชื่อของ)')}</p>
+        <p class="item-meta">
+          <b>ผู้แจ้ง:</b> ${escapeHtml(d.name || '-')}<br>
+          <b>สถานที่:</b> ${escapeHtml(d.location || '-')}<br>
+          <b>เวลา:</b> ${escapeHtml(d.time || '-')}<br>
+          <b>ติดต่อ:</b> ${escapeHtml(d.contact || '-')}
+        </p>
+      `;
+      itemGrid.appendChild(card);
+    });
+  }, err => {
+    console.error(err);
+    itemGrid.innerHTML = '<p class="empty-state">โหลดข้อมูลไม่สำเร็จ</p>';
+  });
+
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
+
 </body>
 </html>
