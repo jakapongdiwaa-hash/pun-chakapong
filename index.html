@@ -1,4 +1,5 @@
 
+html
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -330,8 +331,6 @@
   .item-actions .btn-resolve:hover{background:var(--sage); color:#fff;}
   .item-actions .btn-undo{border-color:var(--gold); color:#8a6d00;}
   .item-actions .btn-undo:hover{background:var(--gold); color:#3A1B57;}
-  .item-actions .btn-edit{border-color:var(--purple); color:var(--purple);}
-  .item-actions .btn-edit:hover{background:var(--purple); color:#fff;}
   .item-actions .btn-delete{border-color:var(--coral); color:var(--coral);}
   .item-actions .btn-delete:hover{background:var(--coral); color:#fff;}
 
@@ -342,59 +341,6 @@
     padding:40px 0;
     font-size:14px;
   }
-
-  /* ===== Edit modal ===== */
-  .modal-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.5);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    z-index:50;
-  }
-  .modal-overlay.open{display:flex;}
-  .modal-box{
-    background:var(--paper);
-    border-radius:14px;
-    padding:28px;
-    width:100%;
-    max-width:480px;
-    max-height:90vh;
-    overflow-y:auto;
-    box-shadow:0 20px 50px rgba(0,0,0,.4);
-  }
-  .modal-box h3{
-    font-family:'Kanit',sans-serif;
-    color:var(--purple-deep);
-    margin:0 0 18px;
-  }
-  .modal-box form{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-  .modal-actions{
-    display:flex;
-    gap:10px;
-    margin-top:6px;
-  }
-  .modal-actions button{
-    flex:1;
-    padding:12px;
-    border-radius:8px;
-    border:none;
-    font-family:'Kanit',sans-serif;
-    font-weight:600;
-    font-size:14px;
-    cursor:pointer;
-  }
-  .modal-actions .btn-save{background:var(--purple); color:#fff;}
-  .modal-actions .btn-cancel{background:#e7e0cf; color:var(--ink);}
-  .modal-msg{font-size:13px;min-height:16px;}
-  .modal-msg.error{color:var(--coral);}
-  .modal-msg.ok{color:var(--sage);}
 
   @media (max-width:600px){
     form#reportForm{grid-template-columns:1fr;}
@@ -479,47 +425,6 @@
 
 </div>
 
-<!-- ===== Edit modal ===== -->
-<div class="modal-overlay" id="editOverlay">
-  <div class="modal-box">
-    <h3>แก้ไขรายการ</h3>
-    <form id="editForm">
-      <div class="field">
-        <label for="eItem">ชื่อสิ่งของ</label>
-        <input type="text" id="eItem" required>
-      </div>
-      <div class="field">
-        <label>สถานะ</label>
-        <div class="status-toggle">
-          <button type="button" data-status="ของหาย" id="eStatusLost">ของหาย</button>
-          <button type="button" data-status="เจอของ" id="eStatusFound">เจอของ</button>
-        </div>
-      </div>
-      <div class="field">
-        <label for="eLocation">สถานที่</label>
-        <input type="text" id="eLocation" required>
-      </div>
-      <div class="field">
-        <label for="eTime">เมื่อเวลา</label>
-        <input type="text" id="eTime" required>
-      </div>
-      <div class="field">
-        <label for="eContact">ช่องทางติดต่อ</label>
-        <input type="text" id="eContact" required>
-      </div>
-      <div class="field">
-        <label for="eImage">เปลี่ยนรูปภาพ (ไม่บังคับ)</label>
-        <input type="file" id="eImage" accept="image/*">
-      </div>
-      <p class="modal-msg" id="editMsg"></p>
-      <div class="modal-actions">
-        <button type="button" class="btn-cancel" id="editCancelBtn">ยกเลิก</button>
-        <button type="submit" class="btn-save" id="editSaveBtn">บันทึก</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -541,13 +446,12 @@
   const IMGBB_API_KEY = "f90d9a9555ee9262bd7b48e369348cf8";
 
   // ===================================================================
-  // ===== รหัสผ่านแอดมิน (แก้ 3 บรรทัดนี้เป็นรหัสของจริงก่อนใช้งาน) =====
+  // ===== รหัสผ่านแอดมิน (แก้ 2 บรรทัดนี้เป็นรหัสของจริงก่อนใช้งาน) =====
   // หมายเหตุ: เป็นการเช็คฝั่ง client เท่านั้น ไม่ใช่ระบบยืนยันตัวตนที่ปลอดภัยสมบูรณ์
   // แต่พอกันเพื่อนกดพลาด/กันคนทั่วไปกดมั่ว ตามที่ต้องการความง่ายไว้
   // ===================================================================
   const RESOLVE_PASSWORD = "sw2026DTC13";  // รหัสสำหรับ "พบเจ้าของแล้ว" / "ย้อนกลับ"
-  const EDIT_PASSWORD    = "sw2026edit13";     // รหัสสำหรับ "แก้ไข"
-  const DELETE_PASSWORD  = "pun13dtc";   // รหัสสำหรับ "ลบถาวร"
+  const DELETE_PASSWORD  = "sw2026dtc248";   // รหัสสำหรับ "ลบถาวร"
 
   function checkPassword(expected, label) {
     const input = window.prompt(`กรอกรหัสผ่านแอดมินสำหรับ "${label}"`);
@@ -732,7 +636,6 @@
       } else {
         actionsHtml += `<button type="button" class="btn-undo" data-action="unresolve" data-id="${d.id}">ย้อนกลับ</button>`;
       }
-      actionsHtml += `<button type="button" class="btn-edit" data-action="edit" data-id="${d.id}">แก้ไข</button>`;
       actionsHtml += `<button type="button" class="btn-delete" data-action="delete" data-id="${d.id}">ลบ</button>`;
       actionsHtml += `</div>`;
 
@@ -787,93 +690,6 @@
         console.error(err);
         alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
       }
-    } else if (action === "edit") {
-      if (!checkPassword(EDIT_PASSWORD, "แก้ไข")) return;
-      openEditModal(report);
-    }
-  });
-
-  // ===================================================================
-  // ===== Edit modal =====
-  // ===================================================================
-  const editOverlay = document.getElementById("editOverlay");
-  const editForm = document.getElementById("editForm");
-  const editMsg = document.getElementById("editMsg");
-  let editingId = null;
-  let editingStatus = "ของหาย";
-
-  const eStatusButtons = [document.getElementById("eStatusLost"), document.getElementById("eStatusFound")];
-  eStatusButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      eStatusButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      editingStatus = btn.dataset.status;
-    });
-  });
-
-  function openEditModal(report) {
-    editingId = report.id;
-    editingStatus = report.status || "ของหาย";
-    document.getElementById("eItem").value = report.itemName || "";
-    document.getElementById("eLocation").value = report.location || "";
-    document.getElementById("eTime").value = report.time || "";
-    document.getElementById("eContact").value = report.contact || "";
-    document.getElementById("eImage").value = "";
-    editMsg.textContent = "";
-    editMsg.className = "modal-msg";
-
-    eStatusButtons.forEach(b => b.classList.remove("active"));
-    eStatusButtons.find(b => b.dataset.status === editingStatus).classList.add("active");
-
-    editOverlay.classList.add("open");
-  }
-
-  function closeEditModal() {
-    editOverlay.classList.remove("open");
-    editingId = null;
-  }
-
-  document.getElementById("editCancelBtn").addEventListener("click", closeEditModal);
-  editOverlay.addEventListener("click", (e) => {
-    if (e.target === editOverlay) closeEditModal();
-  });
-
-  editForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!editingId) return;
-
-    const saveBtn = document.getElementById("editSaveBtn");
-    saveBtn.disabled = true;
-    saveBtn.textContent = "กำลังบันทึก...";
-    editMsg.textContent = "";
-    editMsg.className = "modal-msg";
-
-    try {
-      const updateData = {
-        itemName: document.getElementById("eItem").value.trim(),
-        status: editingStatus,
-        location: document.getElementById("eLocation").value.trim(),
-        time: document.getElementById("eTime").value.trim(),
-        contact: document.getElementById("eContact").value.trim()
-      };
-
-      const fileInput = document.getElementById("eImage");
-      const file = fileInput.files[0];
-      if (file) {
-        saveBtn.textContent = "กำลังอัปโหลดรูป...";
-        updateData.imageUrl = await uploadImageToImgbb(file);
-        saveBtn.textContent = "กำลังบันทึก...";
-      }
-
-      await reportsRef.doc(editingId).update(updateData);
-      closeEditModal();
-    } catch (err) {
-      console.error(err);
-      editMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
-      editMsg.classList.add("error");
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.textContent = "บันทึก";
     }
   });
 </script>
