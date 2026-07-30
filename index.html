@@ -9,14 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#5B2C82;
-    --navy-deep:#3A1B57;
+    --purple:#5B2C83;
+    --purple-deep:#3A1B57;
     --gold:#F2B705;
-    --coral:#8E2A7A;
-    --sage:#B8860B;
-    --gray:#8a8478;
+    --coral:#C9524A;
+    --sage:#4A7C59;
+    --returned:#1F6F78;
     --paper:#FBF7EE;
-    --board:#3A1560;
+    --board:#3D2154;
     --ink:#26313A;
   }
 
@@ -25,12 +25,11 @@
   body{
     margin:0;
     font-family:'Sarabun', sans-serif;
-    font-size:16px;
     color:var(--ink);
     background:
-      radial-gradient(circle at 10% 10%, rgba(255,255,255,0.06), transparent 40%),
-      repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 4px),
-      linear-gradient(160deg, #3A1560 0%, #6B2FA0 100%);
+      radial-gradient(circle at 10% 10%, rgba(255,255,255,0.03), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 4px),
+      var(--board);
     min-height:100vh;
     padding-bottom:60px;
   }
@@ -43,7 +42,7 @@
 
   header .eyebrow{
     font-family:'Kanit', sans-serif;
-    letter-spacing:.3em;
+    letter-spacing:.25em;
     font-size:12px;
     color:var(--gold);
     text-transform:uppercase;
@@ -52,16 +51,16 @@
 
   header h1{
     font-family:'Kanit', sans-serif;
-    font-weight:700;
-    font-size:clamp(28px, 5vw, 44px);
+    font-weight:600;
+    font-size:clamp(28px, 5vw, 42px);
     margin:0 0 8px;
-    text-shadow:0 2px 0 rgba(0,0,0,.25);
+    text-shadow:0 2px 0 rgba(0,0,0,.2);
   }
 
   header p{
     margin:0;
-    opacity:.9;
-    font-size:16px;
+    opacity:.85;
+    font-size:15px;
   }
 
   .wrap{
@@ -74,8 +73,9 @@
     background:var(--paper);
     border-radius:14px;
     padding:32px;
-    box-shadow:0 18px 40px rgba(0,0,0,.3);
+    box-shadow:0 18px 40px rgba(0,0,0,.28);
     position:relative;
+    margin-bottom:26px;
   }
 
   .card-panel::before{
@@ -85,15 +85,15 @@
     transform:translateX(-50%);
     width:26px; height:26px;
     border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #f7dd8e, var(--gold));
+    background:radial-gradient(circle at 35% 30%, #f7dd8a, var(--gold));
     box-shadow:0 4px 8px rgba(0,0,0,.35);
   }
 
   .panel-title{
     font-family:'Kanit', sans-serif;
     font-weight:600;
-    font-size:21px;
-    color:var(--navy-deep);
+    font-size:20px;
+    color:var(--purple-deep);
     margin:0 0 20px;
     display:flex;
     align-items:center;
@@ -101,7 +101,7 @@
   }
 
   .panel-title .num{
-    background:var(--navy);
+    background:var(--purple);
     color:#fff;
     width:26px;height:26px;
     border-radius:50%;
@@ -111,21 +111,15 @@
     font-family:'Sarabun',sans-serif;
   }
 
-  form{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px 20px;
-  }
-
   .field{display:flex;flex-direction:column;gap:6px;}
   .field.full{grid-column:1 / -1;}
 
-  label{font-size:14px;font-weight:600;color:var(--navy);}
+  label{font-size:13px;font-weight:600;color:var(--purple);}
 
   input[type=text], input[type=url], input[type=file], select{
     font-family:'Sarabun',sans-serif;
-    font-size:16px;
-    padding:12px 13px;
+    font-size:15px;
+    padding:11px 13px;
     border:1.5px solid #ddd3bd;
     border-radius:8px;
     background:#fff;
@@ -134,18 +128,24 @@
   }
   input:focus, select:focus{border-color:var(--gold);}
 
+  form#reportForm{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px 20px;
+  }
+
   .status-toggle{
     display:flex;
     gap:10px;
   }
   .status-toggle button{
     flex:1;
-    padding:12px;
+    padding:11px;
     border-radius:8px;
     border:1.5px solid #ddd3bd;
     background:#fff;
     font-family:'Sarabun',sans-serif;
-    font-size:15px;
+    font-size:14px;
     font-weight:600;
     cursor:pointer;
     color:#8a8478;
@@ -161,7 +161,7 @@
   .submit-btn{
     grid-column:1 / -1;
     margin-top:6px;
-    background:var(--navy);
+    background:var(--purple);
     color:#fff;
     border:none;
     padding:14px;
@@ -173,12 +173,12 @@
     letter-spacing:.02em;
     transition:transform .12s, background .15s;
   }
-  .submit-btn:hover{background:var(--navy-deep); transform:translateY(-1px);}
+  .submit-btn:hover{background:var(--purple-deep); transform:translateY(-1px);}
   .submit-btn:disabled{opacity:.6; cursor:default; transform:none;}
 
   .form-msg{
     grid-column:1/-1;
-    font-size:14px;
+    font-size:13px;
     min-height:18px;
   }
   .form-msg.error{color:var(--coral);}
@@ -190,8 +190,44 @@
     text-align:center;
     font-size:22px;
     font-weight:600;
-    margin:56px 0 28px;
+    margin:56px 0 20px;
   }
+
+  /* ===== Filter bar ===== */
+  .filter-bar{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-bottom:28px;
+  }
+  .filter-btn{
+    font-family:'Kanit',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 18px;
+    border-radius:20px;
+    border:1.5px solid rgba(255,255,255,.4);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .filter-btn.active, .filter-btn:hover{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--purple-deep);
+  }
+  .hide-resolved-toggle{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:#fff;
+    font-size:13px;
+    margin-left:8px;
+  }
+  .hide-resolved-toggle.is-hidden{display:none;}
 
   .grid{
     display:grid;
@@ -206,11 +242,11 @@
     box-shadow:0 10px 20px rgba(0,0,0,.3);
     position:relative;
     transform:rotate(var(--tilt, -1.2deg));
-    transition:opacity .2s;
   }
   .item-card:nth-child(3n+1){--tilt:-1.4deg;}
   .item-card:nth-child(3n+2){--tilt:1deg;}
   .item-card:nth-child(3n){--tilt:-0.6deg;}
+
   .item-card.resolved{opacity:.55;}
 
   .item-card::before{
@@ -238,7 +274,7 @@
     align-items:center;
     justify-content:center;
     color:#a89f8a;
-    font-size:14px;
+    font-size:13px;
   }
 
   .stamp{
@@ -255,55 +291,113 @@
   }
   .stamp.lost{background:var(--coral);}
   .stamp.found{background:var(--sage);}
-  .stamp.returned{background:var(--gray);}
+  .stamp.returned{background:var(--returned);}
 
   .item-name{
     font-family:'Kanit',sans-serif;
     font-weight:600;
-    font-size:18px;
-    color:var(--navy-deep);
+    font-size:17px;
+    color:var(--purple-deep);
     margin:0 0 8px;
   }
 
   .item-meta{
-    font-size:14px;
+    font-size:13px;
     color:#5c5648;
-    line-height:1.8;
-    margin:0;
+    line-height:1.7;
+    margin:0 0 10px;
   }
   .item-meta b{color:var(--ink);}
 
-  .admin-actions{
-    margin-top:12px;
+  .item-actions{
     display:flex;
+    flex-wrap:wrap;
     gap:8px;
+    margin-top:10px;
   }
-
-  .admin-btn{
-    flex:1;
-    padding:8px;
-    border:1px dashed #bbb2a0;
-    background:transparent;
-    border-radius:6px;
+  .item-actions button{
     font-family:'Sarabun',sans-serif;
     font-size:12px;
-    color:#8a8478;
+    font-weight:600;
+    padding:7px 11px;
+    border-radius:6px;
+    border:1.5px solid #ddd3bd;
+    background:#fff;
     cursor:pointer;
+    color:var(--ink);
   }
-  .admin-btn:hover{border-color:var(--navy); color:var(--navy);}
-
-  .admin-btn.danger:hover{border-color:var(--coral); color:var(--coral);}
+  .item-actions .btn-resolve{border-color:var(--sage); color:var(--sage);}
+  .item-actions .btn-resolve:hover{background:var(--sage); color:#fff;}
+  .item-actions .btn-undo{border-color:var(--gold); color:#8a6d00;}
+  .item-actions .btn-undo:hover{background:var(--gold); color:#3A1B57;}
+  .item-actions .btn-edit{border-color:var(--purple); color:var(--purple);}
+  .item-actions .btn-edit:hover{background:var(--purple); color:#fff;}
+  .item-actions .btn-delete{border-color:var(--coral); color:var(--coral);}
+  .item-actions .btn-delete:hover{background:var(--coral); color:#fff;}
 
   .empty-state{
     grid-column:1/-1;
     text-align:center;
-    color:rgba(255,255,255,.8);
+    color:rgba(255,255,255,.75);
     padding:40px 0;
-    font-size:15px;
+    font-size:14px;
   }
 
+  /* ===== Edit modal ===== */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--paper);
+    border-radius:14px;
+    padding:28px;
+    width:100%;
+    max-width:480px;
+    max-height:90vh;
+    overflow-y:auto;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+  }
+  .modal-box h3{
+    font-family:'Kanit',sans-serif;
+    color:var(--purple-deep);
+    margin:0 0 18px;
+  }
+  .modal-box form{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:6px;
+  }
+  .modal-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .modal-actions .btn-save{background:var(--purple); color:#fff;}
+  .modal-actions .btn-cancel{background:#e7e0cf; color:var(--ink);}
+  .modal-msg{font-size:13px;min-height:16px;}
+  .modal-msg.error{color:var(--coral);}
+  .modal-msg.ok{color:var(--sage);}
+
   @media (max-width:600px){
-    form{grid-template-columns:1fr;}
+    form#reportForm{grid-template-columns:1fr;}
     .card-panel{padding:22px;}
   }
 </style>
@@ -318,6 +412,7 @@
 
 <div class="wrap">
 
+  <!-- ===== Report form ===== -->
   <div class="card-panel">
     <p class="panel-title"><span class="num">1</span> แจ้งของหาย / เจอของ</p>
 
@@ -368,17 +463,68 @@
 
   <h2 class="board-title">รายการที่แจ้งไว้</h2>
 
+  <div class="filter-bar">
+    <button type="button" class="filter-btn active" data-filter="ทั้งหมด">ทั้งหมด</button>
+    <button type="button" class="filter-btn" data-filter="ของหาย">ของหาย</button>
+    <button type="button" class="filter-btn" data-filter="เจอของ">เจอของ</button>
+    <label class="hide-resolved-toggle" id="hideResolvedWrap">
+      <input type="checkbox" id="hideResolvedChk">
+      ซ่อนรายการที่พบเจ้าของแล้ว
+    </label>
+  </div>
+
   <div class="grid" id="itemGrid">
     <p class="empty-state">กำลังโหลดข้อมูล...</p>
   </div>
 
 </div>
 
+<!-- ===== Edit modal ===== -->
+<div class="modal-overlay" id="editOverlay">
+  <div class="modal-box">
+    <h3>แก้ไขรายการ</h3>
+    <form id="editForm">
+      <div class="field">
+        <label for="eItem">ชื่อสิ่งของ</label>
+        <input type="text" id="eItem" required>
+      </div>
+      <div class="field">
+        <label>สถานะ</label>
+        <div class="status-toggle">
+          <button type="button" data-status="ของหาย" id="eStatusLost">ของหาย</button>
+          <button type="button" data-status="เจอของ" id="eStatusFound">เจอของ</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="eLocation">สถานที่</label>
+        <input type="text" id="eLocation" required>
+      </div>
+      <div class="field">
+        <label for="eTime">เมื่อเวลา</label>
+        <input type="text" id="eTime" required>
+      </div>
+      <div class="field">
+        <label for="eContact">ช่องทางติดต่อ</label>
+        <input type="text" id="eContact" required>
+      </div>
+      <div class="field">
+        <label for="eImage">เปลี่ยนรูปภาพ (ไม่บังคับ)</label>
+        <input type="file" id="eImage" accept="image/*">
+      </div>
+      <p class="modal-msg" id="editMsg"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="editCancelBtn">ยกเลิก</button>
+        <button type="submit" class="btn-save" id="editSaveBtn">บันทึก</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-  // ===== Firebase config =====
+  // ===== Firebase config (จาก Firebase Console ของโปรเจกต์ pun-chakapong248) =====
   const firebaseConfig = {
     apiKey: "AIzaSyBMcc_avCIQsuSzEZAVBltTFJIOrYxdD3Y",
     authDomain: "pun-chakapong248.firebaseapp.com",
@@ -394,10 +540,32 @@
 
   const IMGBB_API_KEY = "f90d9a9555ee9262bd7b48e369348cf8";
 
-  // ===== รหัสผ่านผู้ดูแล — แก้ตรงนี้เป็นรหัสจริง 2 ชุดที่ไม่ซ้ำกัน =====
-  const ADMIN_PASSWORD_RESOLVE = "DTC13test";
-  const ADMIN_PASSWORD_DELETE  = "DTC13test248";
-+
+  // ===================================================================
+  // ===== รหัสผ่านแอดมิน (แก้ 3 บรรทัดนี้เป็นรหัสของจริงก่อนใช้งาน) =====
+  // หมายเหตุ: เป็นการเช็คฝั่ง client เท่านั้น ไม่ใช่ระบบยืนยันตัวตนที่ปลอดภัยสมบูรณ์
+  // แต่พอกันเพื่อนกดพลาด/กันคนทั่วไปกดมั่ว ตามที่ต้องการความง่ายไว้
+  // ===================================================================
+  const RESOLVE_PASSWORD = "sw2026DTC13";  // รหัสสำหรับ "พบเจ้าของแล้ว" / "ย้อนกลับ"
+  const EDIT_PASSWORD    = "sw2026edit13";     // รหัสสำหรับ "แก้ไข"
+  const DELETE_PASSWORD  = "pun13dtc";   // รหัสสำหรับ "ลบถาวร"
+
+  function checkPassword(expected, label) {
+    const input = window.prompt(`กรอกรหัสผ่านแอดมินสำหรับ "${label}"`);
+    if (input === null) return false; // กดยกเลิก
+    if (input !== expected) {
+      alert("รหัสผ่านไม่ถูกต้อง");
+      return false;
+    }
+    return true;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : str;
+    return div.innerHTML;
+  }
+
+  // แปลงไฟล์รูปเป็น base64 แล้วอัปโหลดไป imgbb เพื่อได้ลิงก์รูปกลับมา
   async function uploadImageToImgbb(file) {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -418,8 +586,9 @@
     return json.data.url;
   }
 
+  // ===== Status toggle (ฟอร์มแจ้งของ) =====
   let currentStatus = "ของหาย";
-  const statusButtons = document.querySelectorAll(".status-toggle button");
+  const statusButtons = document.querySelectorAll("#reportForm .status-toggle button");
   statusButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       statusButtons.forEach(b => b.classList.remove("active"));
@@ -428,6 +597,7 @@
     });
   });
 
+  // ===== Submit form =====
   const form = document.getElementById("reportForm");
   const submitBtn = document.getElementById("submitBtn");
   const formMsg = document.getElementById("formMsg");
@@ -459,13 +629,15 @@
         time: document.getElementById("fTime").value.trim(),
         contact: document.getElementById("fContact").value.trim(),
         imageUrl: imageUrl,
+        resolved: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
       await reportsRef.add(data);
+
       form.reset();
       statusButtons.forEach(b => b.classList.remove("active"));
-      document.querySelector('[data-status="ของหาย"]').classList.add("active");
+      document.querySelector('#reportForm [data-status="ของหาย"]').classList.add("active");
       currentStatus = "ของหาย";
       formMsg.textContent = "บันทึกข้อมูลเรียบร้อยแล้ว";
       formMsg.classList.add("ok");
@@ -479,67 +651,93 @@
     }
   });
 
-  // ===== ปุ่มที่ 1: แจ้งว่าคืนแล้ว (เปลี่ยนสถานะ ไม่ลบข้อมูล) =====
-  async function markResolved(id) {
-    const pass = prompt("กรอกรหัสผ่าน เพื่อแจ้งว่ารายการนี้คืนแล้ว");
-    if (pass === null) return;
-    if (pass !== ADMIN_PASSWORD_RESOLVE) {
-      alert("รหัสผ่านไม่ถูกต้อง");
-      return;
-    }
-    try {
-      await reportsRef.doc(id).update({ status: "คืนแล้ว" });
-    } catch (err) {
-      console.error(err);
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
-    }
-  }
-  window.markResolved = markResolved;
+  // ===================================================================
+  // ===== Filter bar =====
+  // ===================================================================
+  let currentFilter = "ทั้งหมด";
+  let hideResolved = false;
+  let allReports = []; // [{id, ...data}]
 
-  // ===== ปุ่มที่ 2: ลบรายการถาวร =====
-  async function deleteItem(id) {
-    const pass = prompt("กรอกรหัสผ่าน เพื่อลบรายการนี้ถาวร");
-    if (pass === null) return;
-    if (pass !== ADMIN_PASSWORD_DELETE) {
-      alert("รหัสผ่านไม่ถูกต้อง");
-      return;
-    }
-    const confirmDelete = confirm("แน่ใจนะว่าจะลบรายการนี้ถาวร? กู้คืนไม่ได้");
-    if (!confirmDelete) return;
-    try {
-      await reportsRef.doc(id).delete();
-    } catch (err) {
-      console.error(err);
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
-    }
-  }
-  window.deleteItem = deleteItem;
+  const hideResolvedWrap = document.getElementById("hideResolvedWrap");
+  const hideResolvedChk = document.getElementById("hideResolvedChk");
 
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter;
+
+      if (currentFilter === "ทั้งหมด") {
+        hideResolvedWrap.classList.remove("is-hidden");
+      } else {
+        hideResolvedWrap.classList.add("is-hidden");
+        hideResolved = false;
+        hideResolvedChk.checked = false;
+      }
+
+      renderGrid();
+    });
+  });
+
+  hideResolvedChk.addEventListener("change", (e) => {
+    hideResolved = e.target.checked;
+    renderGrid();
+  });
+
+  // ===================================================================
   // ===== Live list of reports =====
+  // ===================================================================
   const itemGrid = document.getElementById("itemGrid");
 
   reportsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
-    if (snapshot.empty) {
-      itemGrid.innerHTML = '<p class="empty-state">ยังไม่มีรายการที่แจ้งไว้</p>';
+    allReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderGrid();
+  }, err => {
+    console.error(err);
+    itemGrid.innerHTML = '<p class="empty-state">โหลดข้อมูลไม่สำเร็จ</p>';
+  });
+
+  function renderGrid() {
+    let list = allReports;
+
+    if (currentFilter !== "ทั้งหมด") {
+      list = list.filter(d => d.status === currentFilter);
+    }
+    if (currentFilter === "ทั้งหมด" && hideResolved) {
+      list = list.filter(d => !d.resolved);
+    }
+
+    if (list.length === 0) {
+      itemGrid.innerHTML = '<p class="empty-state">ไม่มีรายการที่ตรงกับตัวกรองนี้</p>';
       return;
     }
 
     itemGrid.innerHTML = "";
-    snapshot.forEach(doc => {
-      const d = doc.data();
+    list.forEach(d => {
       const isLost = d.status === "ของหาย";
-      const isReturned = d.status === "คืนแล้ว";
-      const stampClass = isLost ? "lost" : (isReturned ? "returned" : "found");
 
       const card = document.createElement("div");
-      card.className = "item-card" + (isReturned ? " resolved" : "");
+      card.className = "item-card" + (d.resolved ? " resolved" : "");
 
       const photoHtml = d.imageUrl
         ? `<img class="item-photo" src="${escapeHtml(d.imageUrl)}" alt="${escapeHtml(d.itemName || '')}" onerror="this.classList.add('placeholder'); this.removeAttribute('src'); this.alt='ไม่พบรูปภาพ';">`
         : `<div class="item-photo placeholder">ไม่มีรูปภาพ</div>`;
 
+      const stampClass = d.resolved ? "returned" : (isLost ? "lost" : "found");
+      const stampText = d.resolved ? "คืนแล้ว" : (d.status || "");
+
+      let actionsHtml = `<div class="item-actions">`;
+      if (!d.resolved) {
+        actionsHtml += `<button type="button" class="btn-resolve" data-action="resolve" data-id="${d.id}">พบเจ้าของแล้ว</button>`;
+      } else {
+        actionsHtml += `<button type="button" class="btn-undo" data-action="unresolve" data-id="${d.id}">ย้อนกลับ</button>`;
+      }
+      actionsHtml += `<button type="button" class="btn-edit" data-action="edit" data-id="${d.id}">แก้ไข</button>`;
+      actionsHtml += `<button type="button" class="btn-delete" data-action="delete" data-id="${d.id}">ลบ</button>`;
+      actionsHtml += `</div>`;
+
       card.innerHTML = `
-        <span class="stamp ${stampClass}">${escapeHtml(d.status || '')}</span>
+        <span class="stamp ${stampClass}">${escapeHtml(stampText)}</span>
         ${photoHtml}
         <p class="item-name">${escapeHtml(d.itemName || '(ไม่ระบุชื่อของ)')}</p>
         <p class="item-meta">
@@ -548,23 +746,136 @@
           <b>เวลา:</b> ${escapeHtml(d.time || '-')}<br>
           <b>ติดต่อ:</b> ${escapeHtml(d.contact || '-')}
         </p>
-        <div class="admin-actions">
-          <button class="admin-btn" onclick="markResolved('${doc.id}')">แจ้งว่าคืนแล้ว</button>
-          <button class="admin-btn danger" onclick="deleteItem('${doc.id}')">ลบรายการ</button>
-        </div>
+        ${actionsHtml}
       `;
       itemGrid.appendChild(card);
     });
-  }, err => {
-    console.error(err);
-    itemGrid.innerHTML = '<p class="empty-state">โหลดข้อมูลไม่สำเร็จ</p>';
+  }
+
+  // ===== Card action buttons (event delegation) =====
+  itemGrid.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    const report = allReports.find(r => r.id === id);
+    if (!report) return;
+
+    if (action === "resolve") {
+      if (!checkPassword(RESOLVE_PASSWORD, "พบเจ้าของแล้ว")) return;
+      try {
+        await reportsRef.doc(id).update({ resolved: true });
+      } catch (err) {
+        console.error(err);
+        alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      }
+    } else if (action === "unresolve") {
+      if (!checkPassword(RESOLVE_PASSWORD, "ย้อนกลับ")) return;
+      try {
+        await reportsRef.doc(id).update({ resolved: false });
+      } catch (err) {
+        console.error(err);
+        alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      }
+    } else if (action === "delete") {
+      if (!checkPassword(DELETE_PASSWORD, "ลบถาวร")) return;
+      if (!confirm("ยืนยันการลบรายการนี้? การลบไม่สามารถย้อนกลับได้")) return;
+      try {
+        await reportsRef.doc(id).delete();
+      } catch (err) {
+        console.error(err);
+        alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      }
+    } else if (action === "edit") {
+      if (!checkPassword(EDIT_PASSWORD, "แก้ไข")) return;
+      openEditModal(report);
+    }
   });
 
-  function escapeHtml(str){
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
+  // ===================================================================
+  // ===== Edit modal =====
+  // ===================================================================
+  const editOverlay = document.getElementById("editOverlay");
+  const editForm = document.getElementById("editForm");
+  const editMsg = document.getElementById("editMsg");
+  let editingId = null;
+  let editingStatus = "ของหาย";
+
+  const eStatusButtons = [document.getElementById("eStatusLost"), document.getElementById("eStatusFound")];
+  eStatusButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      eStatusButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      editingStatus = btn.dataset.status;
+    });
+  });
+
+  function openEditModal(report) {
+    editingId = report.id;
+    editingStatus = report.status || "ของหาย";
+    document.getElementById("eItem").value = report.itemName || "";
+    document.getElementById("eLocation").value = report.location || "";
+    document.getElementById("eTime").value = report.time || "";
+    document.getElementById("eContact").value = report.contact || "";
+    document.getElementById("eImage").value = "";
+    editMsg.textContent = "";
+    editMsg.className = "modal-msg";
+
+    eStatusButtons.forEach(b => b.classList.remove("active"));
+    eStatusButtons.find(b => b.dataset.status === editingStatus).classList.add("active");
+
+    editOverlay.classList.add("open");
   }
+
+  function closeEditModal() {
+    editOverlay.classList.remove("open");
+    editingId = null;
+  }
+
+  document.getElementById("editCancelBtn").addEventListener("click", closeEditModal);
+  editOverlay.addEventListener("click", (e) => {
+    if (e.target === editOverlay) closeEditModal();
+  });
+
+  editForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!editingId) return;
+
+    const saveBtn = document.getElementById("editSaveBtn");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "กำลังบันทึก...";
+    editMsg.textContent = "";
+    editMsg.className = "modal-msg";
+
+    try {
+      const updateData = {
+        itemName: document.getElementById("eItem").value.trim(),
+        status: editingStatus,
+        location: document.getElementById("eLocation").value.trim(),
+        time: document.getElementById("eTime").value.trim(),
+        contact: document.getElementById("eContact").value.trim()
+      };
+
+      const fileInput = document.getElementById("eImage");
+      const file = fileInput.files[0];
+      if (file) {
+        saveBtn.textContent = "กำลังอัปโหลดรูป...";
+        updateData.imageUrl = await uploadImageToImgbb(file);
+        saveBtn.textContent = "กำลังบันทึก...";
+      }
+
+      await reportsRef.doc(editingId).update(updateData);
+      closeEditModal();
+    } catch (err) {
+      console.error(err);
+      editMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+      editMsg.classList.add("error");
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "บันทึก";
+    }
+  });
 </script>
 
 </body>
