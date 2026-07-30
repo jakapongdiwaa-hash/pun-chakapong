@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -9,14 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#5B2C82;       /* ม่วง (แทนกรมท่าเดิม) */
-    --navy-deep:#3A1B57;  /* ม่วงเข้ม */
-    --gold:#F2B705;       /* เหลืองทอง */
-    --coral:#8E2A7A;      /* สถานะ "ของหาย" โทนม่วงแดง */
-    --sage:#B8860B;       /* สถานะ "เจอของ" โทนเหลืองทอง */
-    --gray:#8a8478;       /* สถานะ "คืนแล้ว" */
+    --navy:#5B2C82;
+    --navy-deep:#3A1B57;
+    --gold:#F2B705;
+    --coral:#8E2A7A;
+    --sage:#B8860B;
+    --gray:#8a8478;
     --paper:#FBF7EE;
-    --board:#3A1560;      /* พื้นบอร์ดม่วงเข้ม */
+    --board:#3A1560;
     --ink:#26313A;
   }
 
@@ -273,9 +272,14 @@
   }
   .item-meta b{color:var(--ink);}
 
-  .admin-btn{
+  .admin-actions{
     margin-top:12px;
-    width:100%;
+    display:flex;
+    gap:8px;
+  }
+
+  .admin-btn{
+    flex:1;
     padding:8px;
     border:1px dashed #bbb2a0;
     background:transparent;
@@ -286,6 +290,8 @@
     cursor:pointer;
   }
   .admin-btn:hover{border-color:var(--navy); color:var(--navy);}
+
+  .admin-btn.danger:hover{border-color:var(--coral); color:var(--coral);}
 
   .empty-state{
     grid-column:1/-1;
@@ -371,7 +377,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-  // ===== Firebase config (จาก Firebase Console ของโปรเจกต์ pun-chakapong248) =====
+  // ===== Firebase config =====
   const firebaseConfig = {
     apiKey: "AIzaSyBMcc_avCIQsuSzEZAVBltTFJIOrYxdD3Y",
     authDomain: "pun-chakapong248.firebaseapp.com",
@@ -387,10 +393,10 @@
 
   const IMGBB_API_KEY = "f90d9a9555ee9262bd7b48e369348cf8";
 
-  // ===== รหัสผ่านผู้ดูแล (แก้ตรงนี้เป็นรหัสของจริง) =====
-  const ADMIN_PASSWORD = "DTC13editor248";
-
-  // แปลงไฟล์รูปเป็น base64 แล้วอัปโหลดไป imgbb เพื่อได้ลิงก์รูปกลับมา
+  // ===== รหัสผ่านผู้ดูแล — แก้ตรงนี้เป็นรหัสจริง 2 ชุดที่ไม่ซ้ำกัน =====
+  const ADMIN_PASSWORD_RESOLVE = "DTC13test";
+  const ADMIN_PASSWORD_DELETE  = "DTC13test248";
++
   async function uploadImageToImgbb(file) {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -411,7 +417,6 @@
     return json.data.url;
   }
 
-  // ===== Status toggle =====
   let currentStatus = "ของหาย";
   const statusButtons = document.querySelectorAll(".status-toggle button");
   statusButtons.forEach(btn => {
@@ -422,7 +427,6 @@
     });
   });
 
-  // ===== Submit form =====
   const form = document.getElementById("reportForm");
   const submitBtn = document.getElementById("submitBtn");
   const formMsg = document.getElementById("formMsg");
@@ -474,27 +478,41 @@
     }
   });
 
-  // ===== ปุ่มสำหรับผู้ดูแล: ลบ หรือ แจ้งว่าคืนแล้ว =====
-  async function resolveItem(id) {
-    const pass = prompt("กรอกรหัสผ่านผู้ดูแลระบบ เพื่อจัดการรายการนี้");
+  // ===== ปุ่มที่ 1: แจ้งว่าคืนแล้ว (เปลี่ยนสถานะ ไม่ลบข้อมูล) =====
+  async function markResolved(id) {
+    const pass = prompt("กรอกรหัสผ่าน เพื่อแจ้งว่ารายการนี้คืนแล้ว");
     if (pass === null) return;
-    if (pass !== ADMIN_PASSWORD) {
+    if (pass !== ADMIN_PASSWORD_RESOLVE) {
       alert("รหัสผ่านไม่ถูกต้อง");
       return;
     }
-    const doDelete = confirm("กด OK เพื่อ 'ลบ' รายการนี้ออกจากบอร์ดถาวร\nกด Cancel เพื่อแค่ 'แจ้งว่าคืนแล้ว' (การ์ดจะจางลงแต่ยังอยู่)");
     try {
-      if (doDelete) {
-        await reportsRef.doc(id).delete();
-      } else {
-        await reportsRef.doc(id).update({ status: "คืนแล้ว" });
-      }
+      await reportsRef.doc(id).update({ status: "คืนแล้ว" });
     } catch (err) {
       console.error(err);
       alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
     }
   }
-  window.resolveItem = resolveItem;
+  window.markResolved = markResolved;
+
+  // ===== ปุ่มที่ 2: ลบรายการถาวร =====
+  async function deleteItem(id) {
+    const pass = prompt("กรอกรหัสผ่าน เพื่อลบรายการนี้ถาวร");
+    if (pass === null) return;
+    if (pass !== ADMIN_PASSWORD_DELETE) {
+      alert("รหัสผ่านไม่ถูกต้อง");
+      return;
+    }
+    const confirmDelete = confirm("แน่ใจนะว่าจะลบรายการนี้ถาวร? กู้คืนไม่ได้");
+    if (!confirmDelete) return;
+    try {
+      await reportsRef.doc(id).delete();
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+    }
+  }
+  window.deleteItem = deleteItem;
 
   // ===== Live list of reports =====
   const itemGrid = document.getElementById("itemGrid");
@@ -529,7 +547,10 @@
           <b>เวลา:</b> ${escapeHtml(d.time || '-')}<br>
           <b>ติดต่อ:</b> ${escapeHtml(d.contact || '-')}
         </p>
-        <button class="admin-btn" onclick="resolveItem('${doc.id}')">แจ้งว่าคืนแล้ว / ลบรายการ (สำหรับผู้ดูแล)</button>
+        <div class="admin-actions">
+          <button class="admin-btn" onclick="markResolved('${doc.id}')">แจ้งว่าคืนแล้ว</button>
+          <button class="admin-btn danger" onclick="deleteItem('${doc.id}')">ลบรายการ</button>
+        </div>
       `;
       itemGrid.appendChild(card);
     });
