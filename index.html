@@ -1,14 +1,13 @@
-
-html
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>แจ้งของหาย - โรงเรียนสรรพวิทยาคม</title>
+<title>โรงเรียนสรรพวิทยาคม - กระดานของหาย / เช็คชื่อ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+
   :root{
     --purple:#5B2C83;
     --purple-deep:#3A1B57;
@@ -19,6 +18,7 @@ html
     --paper:#FBF7EE;
     --board:#3D2154;
     --ink:#26313A;
+    --gray:#9a9284;
   }
 
   *{box-sizing:border-box;}
@@ -346,17 +346,306 @@ html
     form#reportForm{grid-template-columns:1fr;}
     .card-panel{padding:22px;}
   }
+
+
+  /* ===== Login panel ===== */
+  .login-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+
+  .google-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border:1.5px solid #ddd3bd;
+    border-radius:8px;
+    padding:11px 18px;
+    font-family:'Sarabun',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .google-btn:hover{border-color:var(--purple);}
+
+  .user-chip{
+    display:none;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+  }
+  .user-chip img{
+    width:32px;height:32px;border-radius:50%;
+  }
+  .user-chip .logout-link{
+    color:var(--coral);
+    font-size:12px;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+
+  /* ===== Self check-in panel ===== */
+  #selfCheckinPanel{display:none;}
+
+  .status-preview{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:8px 14px;
+    border-radius:20px;
+    margin-bottom:16px;
+  }
+  .status-preview.submitted{background:rgba(74,124,89,.15); color:var(--sage);}
+  .status-preview.pending{background:rgba(154,146,132,.15); color:var(--gray);}
+
+  .capture-btn{
+    background:var(--purple);
+    color:#fff;
+    border:none;
+    padding:14px 22px;
+    border-radius:9px;
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+  }
+  .capture-btn:hover{background:var(--purple-deep);}
+  .capture-btn:disabled{opacity:.6; cursor:default;}
+
+  .capture-hint{
+    font-size:12px;
+    color:#8a8478;
+    margin-top:8px;
+  }
+
+  .form-msg{font-size:13px; min-height:18px; margin-top:10px;}
+  .form-msg.error{color:var(--coral);}
+  .form-msg.ok{color:var(--sage);}
+
+  /* ===== Date + roster board ===== */
+  .date-bar{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin-bottom:28px;
+    flex-wrap:wrap;
+  }
+
+  .date-bar input[type=date]{
+    font-family:'Sarabun',sans-serif;
+    font-size:14px;
+    padding:9px 13px;
+    border-radius:8px;
+    border:1.5px solid rgba(255,255,255,.4);
+    background:rgba(255,255,255,.08);
+    color:#fff;
+  }
+  .date-bar input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);}
+
+  .today-btn{
+    font-family:'Kanit',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:20px;
+    border:1.5px solid rgba(255,255,255,.4);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+  }
+  .today-btn:hover{background:var(--gold); border-color:var(--gold); color:var(--purple-deep);}
+
+  .roster-summary{
+    text-align:center;
+    color:rgba(255,255,255,.75);
+    font-size:13px;
+    margin-bottom:20px;
+  }
+
+  .roster-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
+    gap:14px;
+  }
+
+  .student-card{
+    background:var(--paper);
+    border-radius:10px;
+    padding:14px;
+    border-left:6px solid var(--gray);
+    box-shadow:0 8px 16px rgba(0,0,0,.25);
+  }
+  .student-card.submitted{border-left-color:var(--sage);}
+  .student-card.leave{border-left-color:var(--gold);}
+  .student-card.absent{border-left-color:var(--coral);}
+  .student-card.pending{border-left-color:var(--gray);}
+
+  .student-card .s-name{
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:var(--purple-deep);
+    margin:0 0 6px;
+  }
+  .student-card .s-status{
+    font-size:12px;
+    font-weight:600;
+  }
+  .student-card.submitted .s-status{color:var(--sage);}
+  .student-card.leave .s-status{color:#8a6d00;}
+  .student-card.absent .s-status{color:var(--coral);}
+  .student-card.pending .s-status{color:var(--gray);}
+
+  .student-card .s-admin-actions{
+    display:none;
+    gap:6px;
+    margin-top:10px;
+    flex-wrap:wrap;
+  }
+  .student-card .s-admin-actions button{
+    font-size:11px;
+    padding:5px 8px;
+    border-radius:5px;
+    border:1.5px solid #ddd3bd;
+    background:#fff;
+    cursor:pointer;
+  }
+
+  /* ===== Admin panel ===== */
+  #adminToggleWrap{
+    text-align:center;
+    margin:40px 0 10px;
+  }
+  #adminToggleWrap button{
+    font-family:'Kanit',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 18px;
+    border-radius:20px;
+    border:1.5px solid rgba(255,255,255,.4);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+  }
+
+  #adminPanel{display:none;}
+
+  .roster-manage-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .roster-manage-row input{
+    flex:1;
+    min-width:140px;
+    font-family:'Sarabun',sans-serif;
+    font-size:14px;
+    padding:10px 12px;
+    border:1.5px solid #ddd3bd;
+    border-radius:8px;
+  }
+  .roster-manage-row button{
+    background:var(--purple);
+    color:#fff;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  /* ===== Photo modal ===== */
+  .modal-backdrop{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.6);
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .modal-box{
+    background:var(--paper);
+    border-radius:12px;
+    padding:20px;
+    max-width:420px;
+    width:100%;
+    text-align:center;
+  }
+  .modal-box img{
+    width:100%;
+    border-radius:8px;
+    margin-bottom:14px;
+  }
+  .modal-box .close-btn{
+    background:var(--purple);
+    color:#fff;
+    border:none;
+    padding:9px 18px;
+    border-radius:8px;
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+
+  /* ===== Mode nav ===== */
+  .mode-nav{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+  }
+  .mode-nav button{
+    font-family:'Kanit',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    padding:10px 20px;
+    border-radius:20px;
+    border:1.5px solid rgba(255,255,255,.4);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .mode-nav button.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--purple-deep);
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+
 </style>
 </head>
 <body>
 
 <header>
   <div class="eyebrow">โรงเรียนสรรพวิทยาคม</div>
-  <h1>กระดานแจ้งของหาย</h1>
-  <p>แจ้งของหาย หรือแจ้งว่าเจอของ ให้เพื่อนๆ ได้เห็น</p>
+  <h1 id="pageTitle">กระดานแจ้งของหาย</h1>
+  <p id="pageSubtitle">แจ้งของหาย หรือแจ้งว่าเจอของ ให้เพื่อนๆ ได้เห็น</p>
+  <div class="mode-nav">
+    <button type="button" class="active" data-view="view-lostfound">กระดานของหาย</button>
+    <button type="button" data-view="view-attendance">เช็คชื่อยืนยันตัวตน</button>
+  </div>
 </header>
 
 <div class="wrap">
+
+  <div class="view active" id="view-lostfound">
+
 
   <!-- ===== Report form ===== -->
   <div class="card-panel">
@@ -423,13 +712,101 @@ html
     <p class="empty-state">กำลังโหลดข้อมูล...</p>
   </div>
 
+
+  </div>
+
+  <div class="view" id="view-attendance">
+
+
+  <!-- ===== Login / self check-in ===== -->
+  <div class="card-panel">
+    <p class="panel-title"><span class="num">1</span> เข้าสู่ระบบด้วยอีเมลโรงเรียน</p>
+
+    <div class="login-row">
+      <button type="button" class="google-btn" id="googleLoginBtn">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.85.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.98v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.95H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.05l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.95l2.99 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+        เข้าสู่ระบบด้วย Google
+      </button>
+      <div class="user-chip" id="userChip">
+        <img id="userAvatar" src="" alt="">
+        <span id="userName"></span>
+        <span class="logout-link" id="logoutLink">ออกจากระบบ</span>
+      </div>
+    </div>
+
+    <div id="selfCheckinPanel" style="margin-top:22px;">
+      <div id="statusPreview"></div>
+      <div>
+        <label for="fCapture" class="capture-btn" style="display:inline-block;">
+          📷 ถ่ายรูปยืนยันตัวตนวันนี้
+        </label>
+        <input type="file" id="fCapture" accept="image/*" capture="environment" style="display:none;">
+      </div>
+      <p class="capture-hint">ต้องถ่ายจากกล้องสดเท่านั้น เลือกรูปเก่าจากคลังภาพไม่ได้</p>
+      <div class="form-msg" id="selfMsg"></div>
+    </div>
+  </div>
+
+  <!-- ===== Date picker + roster board ===== -->
+  <h2 class="board-title">รายชื่อและสถานะประจำวัน</h2>
+
+  <div class="date-bar">
+    <input type="date" id="dateInput">
+    <button type="button" class="today-btn" id="todayBtn">วันนี้</button>
+  </div>
+
+  <p class="roster-summary" id="rosterSummary"></p>
+
+  <div class="roster-grid" id="rosterGrid">
+    <p class="empty-state">กำลังโหลดข้อมูล...</p>
+  </div>
+
+  <!-- ===== Admin toggle ===== -->
+  <div id="adminToggleWrap">
+    <button type="button" id="adminToggleBtn">เข้าสู่โหมดแอดมิน</button>
+  </div>
+
+  <div class="card-panel" id="adminPanel">
+    <p class="panel-title"><span class="num">2</span> จัดการรายชื่อนักเรียน (ตั้งครั้งเดียวตอนเริ่ม)</p>
+    <div class="roster-manage-row">
+      <input type="text" id="newStudentName" placeholder="ชื่อ-นามสกุลนักเรียน">
+      <input type="text" id="newStudentEmail" placeholder="อีเมลโรงเรียนของนักเรียน">
+      <button type="button" id="addStudentBtn">เพิ่มรายชื่อ</button>
+    </div>
+    <p style="font-size:12px; color:#8a8478; margin-bottom:20px;">แอดมินสามารถกดที่การ์ดนักเรียนด้านบนเพื่อดูรูป หรือแก้สถานะเป็น ลา / ขาด / ยังไม่ส่ง ได้โดยตรง</p>
+
+    <p class="panel-title" style="margin-top:24px;"><span class="num">3</span> นำเข้ารายชื่อทั้งห้องพร้อมกัน</p>
+    <p style="font-size:12px; color:#8a8478;">
+      วางรายชื่อ 1 คนต่อ 1 บรรทัด รูปแบบ <b>เลขที่,รหัสประจำตัว,ชื่อ-สกุล</b> เช่น <code>1,33000,นายภูวิศ ไชยบุญเรือง</code><br>
+      ระบบจะตั้งอีเมลให้อัตโนมัติเป็น <b>รหัสประจำตัว + โดเมนโรงเรียน</b> (เช่น 33000@sw.ac.th) — ถ้าอีเมลจริงไม่ตรงรูปแบบนี้ ให้แก้ทีละคนในตารางด้านล่างทีหลัง
+    </p>
+    <textarea id="bulkStudentInput" rows="8" style="width:100%; font-family:'Sarabun',sans-serif; font-size:13px; padding:10px 12px; border:1.5px solid #ddd3bd; border-radius:8px; margin:10px 0;" placeholder="1,33000,นายภูวิศ ไชยบุญเรือง&#10;2,33148,นายกรกฤต ลิ่วกุล&#10;..."></textarea>
+    <button type="button" id="bulkAddBtn" style="background:var(--purple); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-family:'Kanit',sans-serif; font-weight:600; font-size:13px; cursor:pointer;">นำเข้ารายชื่อ</button>
+    <div class="form-msg" id="bulkMsg"></div>
+  </div>
+
+
+  </div>
+
 </div>
+
+<!-- ===== Photo modal ===== -->
+<div class="modal-backdrop" id="photoModal">
+  <div class="modal-box">
+    <img id="modalPhoto" src="" alt="รูปยืนยันตัวตน">
+    <p id="modalStudentName" style="font-family:'Kanit',sans-serif; color:var(--purple-deep); font-weight:600;"></p>
+    <button type="button" class="close-btn" id="closeModalBtn">ปิด</button>
+  </div>
+</div>
+
+
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-  // ===== Firebase config (จาก Firebase Console ของโปรเจกต์ pun-chakapong248) =====
+
   const firebaseConfig = {
     apiKey: "AIzaSyBMcc_avCIQsuSzEZAVBltTFJIOrYxdD3Y",
     authDomain: "pun-chakapong248.firebaseapp.com",
@@ -445,17 +822,12 @@ html
 
   const IMGBB_API_KEY = "f90d9a9555ee9262bd7b48e369348cf8";
 
-  // ===================================================================
-  // ===== รหัสผ่านแอดมิน (แก้ 2 บรรทัดนี้เป็นรหัสของจริงก่อนใช้งาน) =====
-  // หมายเหตุ: เป็นการเช็คฝั่ง client เท่านั้น ไม่ใช่ระบบยืนยันตัวตนที่ปลอดภัยสมบูรณ์
-  // แต่พอกันเพื่อนกดพลาด/กันคนทั่วไปกดมั่ว ตามที่ต้องการความง่ายไว้
-  // ===================================================================
-  const RESOLVE_PASSWORD = "punTEST13";  // รหัสสำหรับ "พบเจ้าของแล้ว" / "ย้อนกลับ"
-  const DELETE_PASSWORD  = "sw2026dtc248";   // รหัสสำหรับ "ลบถาวร"
+  const RESOLVE_PASSWORD = "punTEST13";
+  const DELETE_PASSWORD  = "sw2026dtc248";
 
   function checkPassword(expected, label) {
     const input = window.prompt(`กรอกรหัสผ่านแอดมินสำหรับ "${label}"`);
-    if (input === null) return false; // กดยกเลิก
+    if (input === null) return false;
     if (input !== expected) {
       alert("รหัสผ่านไม่ถูกต้อง");
       return false;
@@ -469,7 +841,6 @@ html
     return div.innerHTML;
   }
 
-  // แปลงไฟล์รูปเป็น base64 แล้วอัปโหลดไป imgbb เพื่อได้ลิงก์รูปกลับมา
   async function uploadImageToImgbb(file) {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -490,7 +861,6 @@ html
     return json.data.url;
   }
 
-  // ===== Status toggle (ฟอร์มแจ้งของ) =====
   let currentStatus = "ของหาย";
   const statusButtons = document.querySelectorAll("#reportForm .status-toggle button");
   statusButtons.forEach(btn => {
@@ -501,7 +871,6 @@ html
     });
   });
 
-  // ===== Submit form =====
   const form = document.getElementById("reportForm");
   const submitBtn = document.getElementById("submitBtn");
   const formMsg = document.getElementById("formMsg");
@@ -555,12 +924,9 @@ html
     }
   });
 
-  // ===================================================================
-  // ===== Filter bar =====
-  // ===================================================================
   let currentFilter = "ทั้งหมด";
   let hideResolved = false;
-  let allReports = []; // [{id, ...data}]
+  let allReports = [];
 
   const hideResolvedWrap = document.getElementById("hideResolvedWrap");
   const hideResolvedChk = document.getElementById("hideResolvedChk");
@@ -588,9 +954,6 @@ html
     renderGrid();
   });
 
-  // ===================================================================
-  // ===== Live list of reports =====
-  // ===================================================================
   const itemGrid = document.getElementById("itemGrid");
 
   reportsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
@@ -655,7 +1018,6 @@ html
     });
   }
 
-  // ===== Card action buttons (event delegation) =====
   itemGrid.addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
@@ -692,6 +1054,384 @@ html
       }
     }
   });
+
+
+  const auth = firebase.auth();
+  const studentsRef = db.collection("students");
+  const attendanceRef = db.collection("attendance");
+
+  // TODO: แก้เป็นโดเมนอีเมลโรงเรียนจริง เช่น "@sw.ac.th"
+  const SCHOOL_EMAIL_DOMAIN = "@sw.ac.th";
+  // รายชื่อเพื่อนในห้อง (ม.4/8) — seed อัตโนมัติครั้งแรกที่เปิดหน้าเช็คชื่อ
+  const SEED_STUDENTS = [
+    {no:"1",  code:"33000", name:"นาย ภูวิศ ไชยบุญเรือง"},
+    {no:"2",  code:"33148", name:"นาย กรกฤต ลั่วกุล"},
+    {no:"3",  code:"33152", name:"นาย ธาวิน คู่ควร"},
+    {no:"4",  code:"33153", name:"นาย ธีรภัทร ใจยะสิทธิ์"},
+    {no:"5",  code:"33154", name:"นาย พนมกร จำปา"},
+    {no:"6",  code:"33157", name:"นาย รัฐกันต์ ส่วนบุญ"},
+    {no:"7",  code:"33160", name:"นาย สิรภพ ชุ่มเย็น"},
+    {no:"8",  code:"33161", name:"นาย เลิศตระกูล เลิศคำ"},
+    {no:"9",  code:"33194", name:"นาย ดลธรรม ตั้งผาติ"},
+    {no:"10", code:"33195", name:"นาย ธีรภัทร อินนาคกูล"},
+    {no:"11", code:"33197", name:"นาย นิธิภัทร ศรีสวรรค์"},
+    {no:"12", code:"33281", name:"นาย ภาณุภณ ไทยตรง"},
+    {no:"13", code:"33340", name:"นาย จักรพงษ์ สุดช่วย"},
+    {no:"14", code:"33346", name:"นาย ปัญจพล อุปคำ"},
+    {no:"15", code:"35496", name:"นาย กรวิชญ์ กุหลาบคีรี"},
+    {no:"16", code:"35497", name:"นาย ณัฐพล ปันส่า"},
+    {no:"17", code:"35498", name:"นาย ตฤณ สอนไว"},
+    {no:"18", code:"35499", name:"นาย ธนโชติ ประมวล"},
+    {no:"19", code:"35500", name:"นาย ธัญสิทธิ์ กิจสุวรรณ"},
+    {no:"20", code:"35501", name:"นาย นทีกานต์ ชมภู"},
+    {no:"21", code:"35502", name:"นาย นพณัฐ ธนะบุญ"},
+    {no:"22", code:"35503", name:"นาย มโนพัทธ พุทธจรรยา"},
+    {no:"23", code:"35504", name:"นาย รัชชานนท์ จันทร์เขียว"},
+    {no:"24", code:"35505", name:"นาย วันดี พุฒพิชญา"},
+    {no:"25", code:"35506", name:"นาย ศักดิ์ดา เลิศหล้า"},
+    {no:"26", code:"35507", name:"นาย ศิรสิทธิ์ ทิสี"},
+    {no:"27", code:"35508", name:"นาย อนุกรณ์ หน่อใหม่"},
+    {no:"28", code:"33060", name:"นางสาว ศิราภรณ์ จันทร์ทิพย์"},
+    {no:"29", code:"33095", name:"นางสาว ธีรจุฑา แสนเมืองอินทร์"},
+    {no:"30", code:"33101", name:"นางสาว มณีวรรณ มูลศรี"},
+    {no:"31", code:"33249", name:"นางสาว ณีชาภัทร ทาเขียว"},
+    {no:"32", code:"33255", name:"นางสาว ปภาวรินทร์ ฤทธิ์โพธิ์"},
+    {no:"33", code:"33259", name:"นางสาว รวิสรา กันเอี้ยง"},
+    {no:"34", code:"33266", name:"นางสาว สิรินทรา จันทร์สุข"},
+    {no:"35", code:"33358", name:"นางสาว ดีโบราพอ - "},
+    {no:"36", code:"34228", name:"นางสาว ชัยรัมภา แก้วทุ่ง"},
+    {no:"37", code:"34232", name:"นางสาว ไอรดา วิใจลอม"},
+    {no:"38", code:"35509", name:"นางสาว จิรัชยา ใจยอด"},
+    {no:"39", code:"35510", name:"นางสาว พรทิพย์ พลอยหาญการ"},
+    {no:"40", code:"35511", name:"นางสาว สาธิดา วงขัด"}
+  ];
+
+  async function seedStudentsIfEmpty(){
+    const snap = await studentsRef.limit(1).get();
+    if (!snap.empty) return;
+    const batch = db.batch();
+    SEED_STUDENTS.forEach(s => {
+      const ref = studentsRef.doc();
+      batch.set(ref, {
+        no: s.no,
+        studentCode: s.code,
+        name: s.name,
+        email: `${s.code}${SCHOOL_EMAIL_DOMAIN}`
+      });
+    });
+    await batch.commit();
+  }
+
+  const ADMIN_PASSWORD = "punTEST13"; // TODO: เปลี่ยนก่อนใช้งานจริง
+
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+
+  let currentUser = null;
+  let currentStudent = null;
+
+  const googleLoginBtn = document.getElementById("googleLoginBtn");
+  const userChip = document.getElementById("userChip");
+  const userAvatar = document.getElementById("userAvatar");
+  const userName = document.getElementById("userName");
+  const logoutLink = document.getElementById("logoutLink");
+  const selfCheckinPanel = document.getElementById("selfCheckinPanel");
+  const selfMsg = document.getElementById("selfMsg");
+
+  googleLoginBtn.addEventListener("click", async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    try {
+      await auth.signInWithPopup(provider);
+    } catch (err) {
+      console.error(err);
+      alert("เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
+    }
+  });
+
+  logoutLink.addEventListener("click", () => auth.signOut());
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      currentUser = null;
+      currentStudent = null;
+      googleLoginBtn.style.display = "inline-flex";
+      userChip.style.display = "none";
+      selfCheckinPanel.style.display = "none";
+      return;
+    }
+
+    if (!user.email || !user.email.endsWith(SCHOOL_EMAIL_DOMAIN)) {
+      selfMsg.textContent = `กรุณาเข้าสู่ระบบด้วยอีเมลโรงเรียน (${SCHOOL_EMAIL_DOMAIN}) เท่านั้น`;
+      selfMsg.className = "form-msg error";
+      await auth.signOut();
+      return;
+    }
+
+    currentUser = user;
+    googleLoginBtn.style.display = "none";
+    userChip.style.display = "inline-flex";
+    userAvatar.src = user.photoURL || "";
+    userName.textContent = user.displayName || user.email;
+
+    const snap = await studentsRef.where("email", "==", user.email).limit(1).get();
+    if (snap.empty) {
+      selfMsg.textContent = "ไม่พบชื่อคุณในรายชื่อห้องนี้ กรุณาแจ้งครูให้เพิ่มชื่อก่อน";
+      selfMsg.className = "form-msg error";
+      selfCheckinPanel.style.display = "none";
+      return;
+    }
+
+    currentStudent = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    selfMsg.textContent = "";
+    selfCheckinPanel.style.display = "block";
+    refreshSelfStatus();
+  });
+
+  async function refreshSelfStatus(){
+    if (!currentStudent) return;
+    const date = dateInput.value || todayStr();
+    const docId = `${date}_${currentStudent.id}`;
+    const doc = await attendanceRef.doc(docId).get();
+    const statusPreview = document.getElementById("statusPreview");
+    const captureLabel = document.querySelector('label[for="fCapture"]');
+
+    if (doc.exists && doc.data().status === "ส่งแล้ว") {
+      statusPreview.innerHTML = '<span class="status-preview submitted">✓ ส่งรูปยืนยันตัวตนวันนี้แล้ว</span>';
+      captureLabel.textContent = "📷 ถ่ายรูปใหม่อีกครั้ง";
+    } else {
+      statusPreview.innerHTML = '<span class="status-preview pending">ยังไม่ได้ส่งรูปวันนี้</span>';
+      captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
+    }
+  }
+
+  document.getElementById("fCapture").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentStudent) return;
+
+    selfMsg.textContent = "";
+    selfMsg.className = "form-msg";
+    const label = document.querySelector('label[for="fCapture"]');
+    label.textContent = "กำลังอัปโหลด...";
+
+    try {
+      const imageUrl = await uploadImageToImgbb(file);
+      const date = dateInput.value || todayStr();
+      const docId = `${date}_${currentStudent.id}`;
+      await attendanceRef.doc(docId).set({
+        studentId: currentStudent.id,
+        studentName: currentStudent.name,
+        date: date,
+        status: "ส่งแล้ว",
+        photoUrl: imageUrl,
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      selfMsg.textContent = "บันทึกเรียบร้อยแล้ว";
+      selfMsg.classList.add("ok");
+      refreshSelfStatus();
+    } catch (err) {
+      console.error(err);
+      selfMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+      selfMsg.classList.add("error");
+      document.querySelector('label[for="fCapture"]').textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
+    }
+  });
+
+  const dateInput = document.getElementById("dateInput");
+  const todayBtn = document.getElementById("todayBtn");
+  dateInput.value = todayStr();
+  dateInput.max = todayStr();
+
+  dateInput.addEventListener("change", () => { loadRosterForDate(); refreshSelfStatus(); });
+  todayBtn.addEventListener("click", () => { dateInput.value = todayStr(); loadRosterForDate(); refreshSelfStatus(); });
+
+  const rosterGrid = document.getElementById("rosterGrid");
+  const rosterSummary = document.getElementById("rosterSummary");
+  let rosterList = [];
+  let isAdmin = false;
+
+  async function loadRoster(){
+    await seedStudentsIfEmpty();
+    const snap = await studentsRef.orderBy("no").get();
+    rosterList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadRosterForDate();
+  }
+
+  async function loadRosterForDate(){
+    const date = dateInput.value || todayStr();
+    if (rosterList.length === 0) {
+      rosterGrid.innerHTML = '<p class="empty-state">ยังไม่มีรายชื่อนักเรียนในระบบ — ให้แอดมินเพิ่มรายชื่อก่อน</p>';
+      rosterSummary.textContent = "";
+      return;
+    }
+
+    const snap = await attendanceRef.where("date", "==", date).get();
+    const attendanceByStudent = {};
+    snap.docs.forEach(d => { attendanceByStudent[d.data().studentId] = { id: d.id, ...d.data() }; });
+
+    let submittedCount = 0;
+    rosterGrid.innerHTML = "";
+    rosterList.forEach(student => {
+      const att = attendanceByStudent[student.id];
+      const status = att ? att.status : "ยังไม่ส่ง";
+      if (status === "ส่งแล้ว") submittedCount++;
+
+      let cardClass = "pending";
+      if (status === "ส่งแล้ว") cardClass = "submitted";
+      else if (status === "ลา") cardClass = "leave";
+      else if (status === "ขาด") cardClass = "absent";
+
+      const card = document.createElement("div");
+      card.className = `student-card ${cardClass}`;
+      card.innerHTML = `
+        <p class="s-name">${escapeHtml(student.name)}</p>
+        <p class="s-status">${escapeHtml(status)}</p>
+        <div class="s-admin-actions" style="display:${isAdmin ? "flex" : "none"};">
+          ${att && att.photoUrl ? `<button type="button" data-action="view-photo" data-id="${student.id}">ดูรูป</button>` : ""}
+          <button type="button" data-action="mark-leave" data-id="${student.id}">ลา</button>
+          <button type="button" data-action="mark-absent" data-id="${student.id}">ขาด</button>
+          <button type="button" data-action="mark-pending" data-id="${student.id}">ยังไม่ส่ง</button>
+        </div>
+      `;
+      rosterGrid.appendChild(card);
+    });
+
+    rosterSummary.textContent = `ส่งแล้ว ${submittedCount} / ${rosterList.length} คน (วันที่ ${date})`;
+    rosterGrid._attendanceByStudent = attendanceByStudent;
+  }
+
+  rosterGrid.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn || !isAdmin) return;
+    const studentId = btn.dataset.id;
+    const student = rosterList.find(s => s.id === studentId);
+    const date = dateInput.value || todayStr();
+    const docId = `${date}_${studentId}`;
+    const action = btn.dataset.action;
+
+    if (action === "view-photo") {
+      const att = rosterGrid._attendanceByStudent[studentId];
+      if (att && att.photoUrl) {
+        document.getElementById("modalPhoto").src = att.photoUrl;
+        document.getElementById("modalStudentName").textContent = student.name;
+        document.getElementById("photoModal").style.display = "flex";
+      }
+      return;
+    }
+
+    let newStatus = "ยังไม่ส่ง";
+    if (action === "mark-leave") newStatus = "ลา";
+    else if (action === "mark-absent") newStatus = "ขาด";
+    else if (action === "mark-pending") newStatus = "ยังไม่ส่ง";
+
+    try {
+      await attendanceRef.doc(docId).set({
+        studentId: studentId,
+        studentName: student.name,
+        date: date,
+        status: newStatus
+      }, { merge: true });
+      loadRosterForDate();
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+    }
+  });
+
+  document.getElementById("closeModalBtn").addEventListener("click", () => {
+    document.getElementById("photoModal").style.display = "none";
+  });
+
+  const adminToggleBtn = document.getElementById("adminToggleBtn");
+  const adminPanel = document.getElementById("adminPanel");
+
+  adminToggleBtn.addEventListener("click", () => {
+    if (isAdmin) {
+      isAdmin = false;
+      adminPanel.style.display = "none";
+      adminToggleBtn.textContent = "เข้าสู่โหมดแอดมิน";
+      loadRosterForDate();
+      return;
+    }
+    const input = window.prompt("กรอกรหัสผ่านแอดมิน");
+    if (input === null) return;
+    if (input !== ADMIN_PASSWORD) { alert("รหัสผ่านไม่ถูกต้อง"); return; }
+    isAdmin = true;
+    adminPanel.style.display = "block";
+    adminToggleBtn.textContent = "ออกจากโหมดแอดมิน";
+    loadRosterForDate();
+  });
+
+  document.getElementById("bulkAddBtn").addEventListener("click", async () => {
+    const raw = document.getElementById("bulkStudentInput").value.trim();
+    const bulkMsg = document.getElementById("bulkMsg");
+    bulkMsg.textContent = "";
+    bulkMsg.className = "form-msg";
+    if (!raw) return;
+
+    const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
+    let added = 0, skipped = 0;
+
+    for (const line of lines) {
+      const parts = line.split(",").map(p => p.trim());
+      if (parts.length < 3) { skipped++; continue; }
+      const [no, studentCode, name] = parts;
+      if (!studentCode || !name) { skipped++; continue; }
+      const email = `${studentCode}${SCHOOL_EMAIL_DOMAIN}`;
+      try {
+        await studentsRef.add({ no: no, studentCode: studentCode, name: name, email: email });
+        added++;
+      } catch (err) {
+        console.error(err);
+        skipped++;
+      }
+    }
+
+    bulkMsg.textContent = `นำเข้าสำเร็จ ${added} คน${skipped ? ` (ข้าม ${skipped} บรรทัดที่รูปแบบไม่ถูกต้อง)` : ""}`;
+    bulkMsg.classList.add("ok");
+    document.getElementById("bulkStudentInput").value = "";
+    loadRoster();
+  });
+
+  document.getElementById("addStudentBtn").addEventListener("click", async () => {
+    const name = document.getElementById("newStudentName").value.trim();
+    const email = document.getElementById("newStudentEmail").value.trim();
+    if (!name || !email) { alert("กรอกชื่อและอีเมลให้ครบ"); return; }
+    if (!email.endsWith(SCHOOL_EMAIL_DOMAIN)) {
+      if (!confirm(`อีเมลนี้ไม่ได้ลงท้ายด้วย ${SCHOOL_EMAIL_DOMAIN} ต้องการเพิ่มต่อหรือไม่?`)) return;
+    }
+    try {
+      await studentsRef.add({ name, email });
+      document.getElementById("newStudentName").value = "";
+      document.getElementById("newStudentEmail").value = "";
+      loadRoster();
+    } catch (err) {
+      console.error(err);
+      alert("เพิ่มรายชื่อไม่สำเร็จ");
+    }
+  });
+
+  loadRoster();
+
+  const pageTitles = {
+    "view-lostfound": ["กระดานแจ้งของหาย", "แจ้งของหาย หรือแจ้งว่าเจอของ ให้เพื่อนๆ ได้เห็น"],
+    "view-attendance": ["เช็คชื่อยืนยันตัวตน", "ถ่ายรูปยืนยันตัวตนประจำวัน ระบบบันทึกเวลาให้อัตโนมัติ"]
+  };
+  document.querySelectorAll(".mode-nav button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".mode-nav button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.dataset.view;
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById(target).classList.add("active");
+      document.getElementById("pageTitle").textContent = pageTitles[target][0];
+      document.getElementById("pageSubtitle").textContent = pageTitles[target][1];
+    });
+  });
+
 </script>
 
 </body>
