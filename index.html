@@ -1122,7 +1122,7 @@
     await batch.commit();
   }
 
-  const ADMIN_PASSWORD = "punTEST13"; // TODO: เปลี่ยนก่อนใช้งานจริง
+  const ADMIN_PASSWORD = "punTEST13"; // TODO: 
 
   function todayStr(){
     const d = new Date();
@@ -1140,20 +1140,20 @@
   const selfCheckinPanel = document.getElementById("selfCheckinPanel");
   const selfMsg = document.getElementById("selfMsg");
 
- googleLoginBtn.addEventListener(“click”, async () => {
+  googleLoginBtn.addEventListener("click", async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: “select_account” });
+    provider.setCustomParameters({ prompt: "select_account" });
     try {
       await auth.signInWithRedirect(provider);
     } catch (err) {
       console.error(err);
-      alert(“เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่”);
+      alert("เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
     }
-});
+  });
 
-auth.getRedirectResult().catch((err) => {
-  console.error(“Redirect login error:”, err);
-}); 
+  auth.getRedirectResult().catch((err) => {
+    console.error("Redirect login error:", err);
+
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       currentUser = null;
