@@ -1133,9 +1133,10 @@
     SEED_STUDENTS.forEach(s => {
      const ref = studentsRef.doc(s.code);
 batch.set(ref, {
-        no: s.no,
-        studentCode: s.code,
+        no: "",
+studentCode: ""
         name: s.name,
+  
         email: `${s.code}${SCHOOL_EMAIL_DOMAIN}`
       });
     });
@@ -1460,7 +1461,8 @@ batch.set(ref, {
       if (!studentCode || !name) { skipped++; continue; }
       const email = `${studentCode}${SCHOOL_EMAIL_DOMAIN}`;
       try {
-        await studentsRef.add({ no: no, studentCode: studentCode, name: name, email: email });
+        await studentsRef.add({ no: "",
+studentCode: "", name: name, email: email });
         added++;
       } catch (err) {
         console.error(err);
