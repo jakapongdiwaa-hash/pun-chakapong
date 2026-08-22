@@ -1151,8 +1151,9 @@
     }
 });
 
-  logoutLink.addEventListener("click", () => auth.signOut());
-
+auth.getRedirectResult().catch((err) => {
+  console.error(“Redirect login error:”, err);
+}); 
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       currentUser = null;
