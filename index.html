@@ -1140,16 +1140,16 @@
   const selfCheckinPanel = document.getElementById("selfCheckinPanel");
   const selfMsg = document.getElementById("selfMsg");
 
-  googleLoginBtn.addEventListener("click", async () => {
+ googleLoginBtn.addEventListener(“click”, async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
+    provider.setCustomParameters({ prompt: “select_account” });
     try {
-      await auth.signInWithPopup(provider);
+      await auth.signInWithRedirect(provider);
     } catch (err) {
       console.error(err);
-      alert("เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
+      alert(“เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่”);
     }
-  });
+});
 
   logoutLink.addEventListener("click", () => auth.signOut());
 
