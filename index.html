@@ -1250,6 +1250,13 @@
     userChip.style.display = "inline-flex";
     userAvatar.src = user.photoURL || "";
     userName.textContent = user.displayName || user.email;
+        // พากลับมาหน้าเช็คชื่อเสมอ เผื่อหลุดไปหน้าอื่นตอน redirect login กลับมา
+    document.querySelectorAll(".mode-nav button").forEach(b => b.classList.remove("active"));
+    document.querySelector('.mode-nav button[data-view="view-attendance"]').classList.add("active");
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById("view-attendance").classList.add("active");
+    document.getElementById("pageTitle").textContent = pageTitles["view-attendance"][0];
+    document.getElementById("pageSubtitle").textContent = pageTitles["view-attendance"][1];
 
     const snap = await studentsRef.where("email", "==", user.email).limit(1).get();
     if (snap.empty) {
