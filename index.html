@@ -1131,12 +1131,11 @@
     if (!snap.empty) return; // มีข้อมูลอยู่แล้ว ไม่ seed ซ้ำ
     const batch = db.batch();
     SEED_STUDENTS.forEach(s => {
-     const ref = studentsRef.doc(s.code);
-batch.set(ref, {
-        no: "",
-studentCode: ""
+      const ref = studentsRef.doc();
+      batch.set(ref, {
+        no: s.no,
+        studentCode: s.code,
         name: s.name,
-  
         email: `${s.code}${SCHOOL_EMAIL_DOMAIN}`
       });
     });
@@ -1201,21 +1200,19 @@ studentCode: ""
     regSubmitBtn.textContent = "กำลังลงทะเบียน...";
 
     try {
-        // ถ้าชื่อนี้มีอยู่ใน roster ที่ seed ไว้แล้ว ให้ผูกอีเมลเข้ากับคนเดิม แทนที่จะสร้างใหม่
-        const existing = rosterList.find(s => s.name.trim() === name);
-        if (existing) {
-          await studentsRef.doc(existing.id).update({ email: currentUser.email });
-          currentStudent = { ...existing, email: currentUser.email };
-        } else {
-          const docRef = await studentsRef.add({
-            name: name,
-            email: currentUser.email,
-            classRoom: CLASS_ROOM,
-            no: “”,
-            studentCode: “”
-          });
-          currentStudent = { id: docRef.id, name: name, email: currentUser.email, classRoom: CLASS_ROOM };
-        }
+      await studentsRef.add({
+        name: name,
+        email: currentUser.email,
+        classRoom: CLASS_ROOM,
+        no: "",
+        studentCode: ""
+      });
+
+      const snap2 = await studentsRef.where("email", "==", currentUser.email).limit(1).get();
+      if (!snap2.empty) {
+        currentStudent = { id: snap2.docs[0].id, ...snap2.docs[0].data() };
+      }
+
       selfRegisterPanel.style.display = "none";
       selfCheckinPanel.style.display = "block";
       regName.value = "";
@@ -1461,8 +1458,7 @@ studentCode: ""
       if (!studentCode || !name) { skipped++; continue; }
       const email = `${studentCode}${SCHOOL_EMAIL_DOMAIN}`;
       try {
-        await studentsRef.add({ no: "",
-studentCode: "", name: name, email: email });
+        await studentsRef.add({ no: no, studentCode: studentCode, name: name, email: email });
         added++;
       } catch (err) {
         console.error(err);
