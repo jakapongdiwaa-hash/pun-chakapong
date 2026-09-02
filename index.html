@@ -1419,8 +1419,16 @@
 
   async function loadRoster(){
     await seedStudentsIfEmpty();
-    const snap = await studentsRef.orderBy("no").get();
+    const snap = await studentsRef.get();
     rosterList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    rosterList.sort((a, b) => {
+      const na = parseInt(a.no, 10);
+      const nb = parseInt(b.no, 10);
+      if (isNaN(na) && isNaN(nb)) return 0;
+      if (isNaN(na)) return 1;
+      if (isNaN(nb)) return -1;
+      return na - nb;
+    });
     loadRosterForDate();
   }
 
