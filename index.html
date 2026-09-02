@@ -797,7 +797,7 @@
     <p class="panel-title" style="margin-top:24px;"><span class="num">3</span> นำเข้ารายชื่อทั้งห้องพร้อมกัน</p>
     <p style="font-size:12px; color:#8a8478;">
       วางรายชื่อ 1 คนต่อ 1 บรรทัด รูปแบบ <b>เลขที่,รหัสประจำตัว,ชื่อ-สกุล</b> เช่น <code>1,33000,นายภูวิศ ไชยบุญเรือง</code><br>
-      ระบบจะตั้งอีเมลให้อัตโนมัติเป็น <b>รหัสประจำตัว + โดเมนโรงเรียน</b> (เช่น 33000@sw.ac.th) — ถ้าอีเมลจริงไม่ตรงรูปแบบนี้ ให้แก้ทีละคนในตารางด้านล่างทีหลัง
+      ระบบจะตั้งอีเมลให้อัตโนมัติเป็น <b>รหัสประจำตัว + โดเมนโรงเรียน</b> (เช่น 33000@sappha.ac.th) — ถ้าอีเมลจริงไม่ตรงรูปแบบนี้ ให้แก้ทีละคนในตารางด้านล่างทีหลัง
     </p>
     <textarea id="bulkStudentInput" rows="8" style="width:100%; font-family:'Sarabun',sans-serif; font-size:13px; padding:10px 12px; border:1.5px solid #ddd3bd; border-radius:8px; margin:10px 0;" placeholder="1,33000,นายภูวิศ ไชยบุญเรือง&#10;2,33148,นายกรกฤต ลิ่วกุล&#10;..."></textarea>
     <button type="button" id="bulkAddBtn" style="background:var(--purple); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-family:'Kanit',sans-serif; font-weight:600; font-size:13px; cursor:pointer;">นำเข้ารายชื่อ</button>
@@ -1079,8 +1079,7 @@
   const studentsRef = db.collection("students");
   const attendanceRef = db.collection("attendance");
 
-  // TODO: แก้เป็นโดเมนอีเมลโรงเรียนจริง เช่น "@sw.ac.th"
-  const SCHOOL_EMAIL_DOMAIN = "@sw.ac.th";
+  const SCHOOL_EMAIL_DOMAIN = "@sappha.ac.th";
 
   // รายชื่อเพื่อนในห้อง (ม.4/8) — ใช้ seed อัตโนมัติครั้งแรกที่เปิดหน้าเช็คชื่อ
   const SEED_STUDENTS = [
