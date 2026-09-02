@@ -857,6 +857,10 @@
         ยังไม่พบชื่อคุณในระบบ กรุณากรอกข้อมูลเพื่อลงทะเบียนเข้าห้อง
       </p>
       <div class="field" style="margin-bottom:12px;">
+        <label for="regNo">เลขที่</label>
+        <input type="text" id="regNo" placeholder="เช่น 1">
+      </div>
+      <div class="field" style="margin-bottom:12px;">
         <label for="regName">ชื่อ-นามสกุล</label>
         <input type="text" id="regName" placeholder="เช่น นายภูวิศ ไชยบุญเรือง">
       </div>
@@ -1208,66 +1212,6 @@
 
   const SCHOOL_EMAIL_DOMAIN = "@sappha.ac.th";
 
-  // รายชื่อเพื่อนในห้อง (ม.4/8) — ใช้ seed อัตโนมัติครั้งแรกที่เปิดหน้าเช็คชื่อ
-  const SEED_STUDENTS = [
-    {no:"1",  code:"33000", name:"นายภูวิศ ไชยบุญเรือง"},
-    {no:"2",  code:"33148", name:"นายกรกฤต ลิ่วกุล"},
-    {no:"3",  code:"33152", name:"เด็กชายธาวิน คู่ควร"},
-    {no:"4",  code:"33153", name:"เด็กชายธีรภัทร ใจยะสิทธิ์"},
-    {no:"5",  code:"33154", name:"นายพนมกร จำปา"},
-    {no:"6",  code:"33157", name:"นายรัฐกันต์ ส่วนบุญ"},
-    {no:"7",  code:"33160", name:"เด็กชายสิรภพ ชุ่มเย็น"},
-    {no:"8",  code:"33161", name:"นายเลิศตระกูล เลิศคำ"},
-    {no:"9",  code:"33194", name:"นายดลธรรม ตั้งผาติ"},
-    {no:"10", code:"33195", name:"นายธีรภัทร อินนาคกูล"},
-    {no:"11", code:"33197", name:"เด็กชายนิธิภัทร ศรีสวรรค์"},
-    {no:"12", code:"33281", name:"นายภาณุภณ ไทยตรง"},
-    {no:"13", code:"33340", name:"นายจักรพงษ์ สุดช่วย"},
-    {no:"14", code:"33346", name:"นายปัญจพล อุปคำ"},
-    {no:"15", code:"35496", name:"นายกรวิชญ์ กุหลาบคีรี"},
-    {no:"16", code:"35497", name:"นายณัฐพล ปันส่า"},
-    {no:"17", code:"35498", name:"นายตฤณ สอนไว"},
-    {no:"18", code:"35499", name:"นายธนโชติ ประมวล"},
-    {no:"19", code:"35500", name:"นายธัญสิทธิ์ กิจสุวรรณ"},
-    {no:"20", code:"35501", name:"นายนทีกานต์ ชมภู"},
-    {no:"21", code:"35502", name:"นายนพณัฐ ธนะบุญ"},
-    {no:"22", code:"35503", name:"นายมโนพัทธ พุทธจรรยา"},
-    {no:"23", code:"35504", name:"นายรัชชานนท์ จันทร์เขียว"},
-    {no:"24", code:"35505", name:"นายวันดี พุฒพิชญา"},
-    {no:"25", code:"35506", name:"นายศักดิ์ดา เลิศหล้า"},
-    {no:"26", code:"35507", name:"นายศิรสิทธิ์ ทิสี"},
-    {no:"27", code:"35508", name:"นายอนุกรณ์ หน่อใหม่"},
-    {no:"28", code:"33060", name:"นางสาวศิราภรณ์ จันทร์ทิพย์"},
-    {no:"29", code:"33095", name:"นางสาวธีรจุฑา แสนเมืองอินทร์"},
-    {no:"30", code:"33101", name:"นางสาวมณีวรรณ มูลศรี"},
-    {no:"31", code:"33249", name:"เด็กหญิงณีชาภัทร ทาเขียว"},
-    {no:"32", code:"33255", name:"นางสาวปภาวรินทร์ ฤทธิ์โพธิ์"},
-    {no:"33", code:"33259", name:"เด็กหญิงวิสรา กันเอี้ยง"},
-    {no:"34", code:"33266", name:"นางสาวสิรินทรา จันทร์สุข"},
-    {no:"35", code:"33358", name:"นางสาวดีโบรา พอ"},
-    {no:"36", code:"34228", name:"นางสาวชัยรัมภา แก้วทุ่ง"},
-    {no:"37", code:"34232", name:"นางสาวไอรดา วิใจลอม"},
-    {no:"38", code:"35509", name:"นางสาวจิรัชยา ใจยอด"},
-    {no:"39", code:"35510", name:"นางสาวพรทิพย์ พลอยหาญการ"},
-    {no:"40", code:"35511", name:"นางสาวสาธิดา วงขัด"}
-  ];
-
-  async function seedStudentsIfEmpty(){
-    const snap = await studentsRef.limit(1).get();
-    if (!snap.empty) return; // มีข้อมูลอยู่แล้ว ไม่ seed ซ้ำ
-    const batch = db.batch();
-    SEED_STUDENTS.forEach(s => {
-      const ref = studentsRef.doc();
-      batch.set(ref, {
-        no: s.no,
-        studentCode: s.code,
-        name: s.name,
-        email: `${s.code}${SCHOOL_EMAIL_DOMAIN}`
-      });
-    });
-    await batch.commit();
-  }
-
   // รหัสผ่านแอดมิน (เช็คฝั่ง client เท่านั้น เหมือนหน้ากระดานของหาย)
   const ADMIN_PASSWORD = "punTEST13"; // TODO: เปลี่ยนก่อนใช้งานจริง
 
@@ -1305,14 +1249,16 @@
   const CLASS_ROOM = "ม.4/8";
 
   const selfRegisterPanel = document.getElementById("selfRegisterPanel");
+  const regNo = document.getElementById("regNo");
   const regName = document.getElementById("regName");
   const regMsg = document.getElementById("regMsg");
   const regSubmitBtn = document.getElementById("regSubmitBtn");
 
   regSubmitBtn.addEventListener("click", async () => {
+    const no = regNo.value.trim();
     const name = regName.value.trim();
-    if (!name) {
-      regMsg.textContent = "กรุณากรอกชื่อ-นามสกุล";
+    if (!no || !name) {
+      regMsg.textContent = "กรุณากรอกเลขที่และชื่อ-นามสกุลให้ครบ";
       regMsg.className = "form-msg error";
       return;
     }
@@ -1328,7 +1274,7 @@
         name: name,
         email: currentUser.email,
         classRoom: CLASS_ROOM,
-        no: "",
+        no: no,
         studentCode: ""
       });
 
@@ -1339,6 +1285,7 @@
 
       selfRegisterPanel.style.display = "none";
       selfCheckinPanel.style.display = "block";
+      regNo.value = "";
       regName.value = "";
       await loadRoster();
       refreshSelfStatus();
@@ -1586,7 +1533,6 @@
   let isAdmin = false;
 
   async function loadRoster(){
-    await seedStudentsIfEmpty();
     const snap = await studentsRef.get();
     rosterList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     rosterList.sort((a, b) => {
