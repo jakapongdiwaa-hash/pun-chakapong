@@ -1164,15 +1164,13 @@
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
     try {
-      await auth.signInWithRedirect(provider);
+      await auth.signInWithPopup(provider);
     } catch (err) {
       console.error(err);
-      alert("เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
+      if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
+        alert("เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่ (" + err.code + ")");
+      }
     }
-  });
-
-  auth.getRedirectResult().catch((err) => {
-    console.error("Redirect login error:", err);
   });
 
   logoutLink.addEventListener("click", () => auth.signOut());
