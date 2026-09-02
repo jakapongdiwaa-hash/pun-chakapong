@@ -1636,6 +1636,7 @@
           <button type="button" data-action="mark-leave" data-id="${student.id}">ลา</button>
           <button type="button" data-action="mark-absent" data-id="${student.id}">ขาด</button>
           <button type="button" data-action="mark-pending" data-id="${student.id}">ยังไม่ส่ง</button>
+          <button type="button" data-action="edit-student" data-id="${student.id}">แก้ไข</button>
           <button type="button" class="btn-delete" data-action="delete-student" data-id="${student.id}">ลบรายชื่อ</button>
         </div>
       `;
@@ -1673,6 +1674,21 @@
       } catch (err) {
         console.error(err);
         alert("ลบรายชื่อไม่สำเร็จ กรุณาลองใหม่");
+      }
+      return;
+    }
+
+    if (action === "edit-student") {
+      const newName = window.prompt("ชื่อ-นามสกุล", student.name || "");
+      if (newName === null) return;
+      const newEmail = window.prompt("อีเมล (ใช้สำหรับล็อกอิน)", student.email || "");
+      if (newEmail === null) return;
+      try {
+        await studentsRef.doc(studentId).update({ name: newName.trim(), email: newEmail.trim() });
+        await loadRoster();
+      } catch (err) {
+        console.error(err);
+        alert("แก้ไขไม่สำเร็จ กรุณาลองใหม่");
       }
       return;
     }
