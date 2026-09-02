@@ -899,7 +899,8 @@
       <input type="text" id="newStudentEmail" placeholder="อีเมลโรงเรียนของนักเรียน">
       <button type="button" id="addStudentBtn">เพิ่มรายชื่อ</button>
     </div>
-    <p style="font-size:12px; color:#64748B; margin-bottom:20px;">แอดมินสามารถกดที่การ์ดนักเรียนด้านบนเพื่อดูรูป หรือแก้สถานะเป็น ลา / ขาด / ยังไม่ส่ง ได้โดยตรง</p>
+    <p style="font-size:12px; color:#64748B; margin-bottom:14px;">แอดมินสามารถกดที่การ์ดนักเรียนด้านบนเพื่อดูรูป หรือแก้สถานะเป็น ลา / ขาด / ยังไม่ส่ง ได้โดยตรง</p>
+    <button type="button" class="btn-delete" id="deleteAllBtn" style="border:1.5px solid var(--coral); background:#fff; padding:9px 16px; border-radius:8px; font-family:'Kanit',sans-serif; font-weight:600; font-size:13px; cursor:pointer; margin-bottom:20px;">ลบรายชื่อนักเรียนทั้งหมด</button>
 
     <p class="panel-title" style="margin-top:24px;"><span class="num">3</span> นำเข้ารายชื่อทั้งห้องพร้อมกัน</p>
     <p style="font-size:12px; color:#64748B;">
@@ -1735,6 +1736,22 @@
     } catch (err) {
       console.error(err);
       alert("เพิ่มรายชื่อไม่สำเร็จ");
+    }
+  });
+
+  document.getElementById("deleteAllBtn").addEventListener("click", async () => {
+    if (rosterList.length === 0) { alert("ไม่มีรายชื่อให้ลบ"); return; }
+    if (!confirm(`ยืนยันลบรายชื่อนักเรียนทั้งหมด ${rosterList.length} คน? การลบไม่สามารถย้อนกลับได้`)) return;
+    if (!confirm("ยืนยันอีกครั้ง: ต้องการลบรายชื่อทั้งหมดจริงๆ ใช่ไหม?")) return;
+    try {
+      const snap = await studentsRef.get();
+      const batch = db.batch();
+      snap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+      await loadRoster();
+    } catch (err) {
+      console.error(err);
+      alert("ลบไม่สำเร็จ กรุณาลองใหม่");
     }
   });
 
