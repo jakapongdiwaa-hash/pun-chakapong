@@ -453,6 +453,15 @@
   }
   .status-preview.submitted{background:rgba(74,124,89,.15); color:var(--sage);}
   .status-preview.pending{background:rgba(100,116,139,.15); color:var(--gray);}
+  .status-preview.leave{background:rgba(34,211,238,.15); color:#0E7490;}
+
+  .leave-toggle-link{
+    font-size:13px;
+    color:var(--purple);
+    text-decoration:underline;
+    cursor:pointer;
+    margin:14px 0 0;
+  }
 
   .capture-btn{
     background:var(--purple);
@@ -565,6 +574,12 @@
   .student-card.leave .s-status{color:#0E7490;}
   .student-card.absent .s-status{color:var(--coral);}
   .student-card.pending .s-status{color:var(--gray);}
+
+  .student-card .s-reason{
+    font-size:11px;
+    color:var(--gray);
+    margin:4px 0 0;
+  }
 
   .student-card .s-admin-actions{
     display:none;
@@ -823,6 +838,16 @@
         <button type="button" class="capture-btn" id="openCameraBtn">📷 ถ่ายรูปยืนยันตัวตนวันนี้</button>
       </div>
       <p class="capture-hint">ต้องถ่ายจากกล้องสดในเว็บนี้เท่านั้น ไม่สามารถอัปโหลดรูปเก่าได้</p>
+
+      <p class="leave-toggle-link" id="leaveToggleLink">หรือแจ้งลาวันนี้แทน</p>
+      <div id="leaveForm" style="display:none; margin-top:8px;">
+        <div class="field" style="margin-bottom:10px;">
+          <label for="leaveReason">เหตุผลที่ลา</label>
+          <input type="text" id="leaveReason" placeholder="เช่น ป่วย, ธุระที่บ้าน">
+        </div>
+        <button type="button" class="capture-btn" id="submitLeaveBtn" style="background:var(--gold); color:var(--purple-deep);">ยืนยันแจ้งลา</button>
+      </div>
+
       <div class="form-msg" id="selfMsg"></div>
     </div>
 
@@ -1372,14 +1397,68 @@
     const statusPreview = document.getElementById("statusPreview");
     const openCameraBtn = document.getElementById("openCameraBtn");
 
-    if (doc.exists && doc.data().status === "ส่งแล้ว") {
+    const data = doc.exists ? doc.data() : null;
+    if (data && data.status === "ส่งแล้ว") {
       statusPreview.innerHTML = '<span class="status-preview submitted">✓ ส่งรูปยืนยันตัวตนวันนี้แล้ว</span>';
       openCameraBtn.textContent = "📷 ถ่ายรูปใหม่อีกครั้ง";
+    } else if (data && data.status === "ลา") {
+      statusPreview.innerHTML = `<span class="status-preview leave">🟡 แจ้งลาวันนี้แล้ว${data.reason ? ` (${escapeHtml(data.reason)})` : ""}</span>`;
+      openCameraBtn.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     } else {
       statusPreview.innerHTML = '<span class="status-preview pending">ยังไม่ได้ส่งรูปวันนี้</span>';
       openCameraBtn.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     }
   }
+
+  const leaveToggleLink = document.getElementById("leaveToggleLink");
+  const leaveForm = document.getElementById("leaveForm");
+  const leaveReason = document.getElementById("leaveReason");
+  const submitLeaveBtn = document.getElementById("submitLeaveBtn");
+
+  leaveToggleLink.addEventListener("click", () => {
+    leaveForm.style.display = leaveForm.style.display === "none" ? "block" : "none";
+  });
+
+  submitLeaveBtn.addEventListener("click", async () => {
+    if (!currentStudent) return;
+    const reason = leaveReason.value.trim();
+    if (!reason) {
+      selfMsg.textContent = "กรุณากรอกเหตุผลที่ลา";
+      selfMsg.className = "form-msg error";
+      return;
+    }
+
+    submitLeaveBtn.disabled = true;
+    submitLeaveBtn.textContent = "กำลังบันทึก...";
+    selfMsg.textContent = "";
+    selfMsg.className = "form-msg";
+
+    try {
+      const date = dateInput.value || todayStr();
+      const docId = `${date}_${currentStudent.id}`;
+      await attendanceRef.doc(docId).set({
+        studentId: currentStudent.id,
+        studentName: currentStudent.name,
+        date: date,
+        status: "ลา",
+        reason: reason,
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      selfMsg.textContent = "แจ้งลาเรียบร้อยแล้ว";
+      selfMsg.className = "form-msg ok";
+      leaveForm.style.display = "none";
+      leaveReason.value = "";
+      refreshSelfStatus();
+    } catch (err) {
+      console.error(err);
+      selfMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+      selfMsg.classList.add("error");
+    } finally {
+      submitLeaveBtn.disabled = false;
+      submitLeaveBtn.textContent = "ยืนยันแจ้งลา";
+    }
+  });
 
   const cameraModal = document.getElementById("cameraModal");
   const camVideo = document.getElementById("camVideo");
@@ -1543,6 +1622,7 @@
         ${student.no ? `<span class="s-no">#${escapeHtml(student.no)}</span>` : ""}
         <p class="s-name">${escapeHtml(student.name)}</p>
         <p class="s-status">${escapeHtml(status)}</p>
+        ${status === "ลา" && att && att.reason ? `<p class="s-reason">เหตุผล: ${escapeHtml(att.reason)}</p>` : ""}
         <div class="s-admin-actions" style="display:${isAdmin ? "flex" : "none"};">
           ${att && att.photoUrl ? `<button type="button" data-action="view-photo" data-id="${student.id}">ดูรูป</button>` : ""}
           <button type="button" data-action="mark-leave" data-id="${student.id}">ลา</button>
