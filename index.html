@@ -1377,6 +1377,7 @@
           <button type="button" data-action="mark-leave" data-id="${student.id}">ลา</button>
           <button type="button" data-action="mark-absent" data-id="${student.id}">ขาด</button>
           <button type="button" data-action="mark-pending" data-id="${student.id}">ยังไม่ส่ง</button>
+          <button type="button" class="btn-delete" data-action="delete-student" data-id="${student.id}">ลบรายชื่อ</button>
         </div>
       `;
       rosterGrid.appendChild(card);
@@ -1401,6 +1402,18 @@
         document.getElementById("modalPhoto").src = att.photoUrl;
         document.getElementById("modalStudentName").textContent = student.name;
         document.getElementById("photoModal").style.display = "flex";
+      }
+      return;
+    }
+
+    if (action === "delete-student") {
+      if (!confirm(`ยืนยันลบ "${student.name}" ออกจากรายชื่อ? การลบไม่สามารถย้อนกลับได้`)) return;
+      try {
+        await studentsRef.doc(studentId).delete();
+        await loadRoster();
+      } catch (err) {
+        console.error(err);
+        alert("ลบรายชื่อไม่สำเร็จ กรุณาลองใหม่");
       }
       return;
     }
@@ -1455,17 +1468,22 @@
     bulkMsg.className = "form-msg";
     if (!raw) return;
 
+    const existingSnap = await studentsRef.get();
+    const existingCodes = new Set(existingSnap.docs.map(d => d.data().studentCode).filter(Boolean));
+
     const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
-    let added = 0, skipped = 0;
+    let added = 0, skipped = 0, duplicated = 0;
 
     for (const line of lines) {
       const parts = line.split(",").map(p => p.trim());
       if (parts.length < 3) { skipped++; continue; }
       const [no, studentCode, name] = parts;
       if (!studentCode || !name) { skipped++; continue; }
+      if (existingCodes.has(studentCode)) { duplicated++; continue; }
       const email = `${studentCode}${SCHOOL_EMAIL_DOMAIN}`;
       try {
         await studentsRef.add({ no: no, studentCode: studentCode, name: name, email: email });
+        existingCodes.add(studentCode);
         added++;
       } catch (err) {
         console.error(err);
@@ -1473,7 +1491,7 @@
       }
     }
 
-    bulkMsg.textContent = `นำเข้าสำเร็จ ${added} คน${skipped ? ` (ข้าม ${skipped} บรรทัดที่รูปแบบไม่ถูกต้อง)` : ""}`;
+    bulkMsg.textContent = `นำเข้าสำเร็จ ${added} คน${duplicated ? ` (ข้ามซ้ำ ${duplicated} คนที่มีรหัสประจำตัวอยู่แล้ว)` : ""}${skipped ? ` (ข้าม ${skipped} บรรทัดที่รูปแบบไม่ถูกต้อง)` : ""}`;
     bulkMsg.classList.add("ok");
     document.getElementById("bulkStudentInput").value = "";
     loadRoster();
@@ -1486,6 +1504,8 @@
     if (!email.endsWith(SCHOOL_EMAIL_DOMAIN)) {
       if (!confirm(`อีเมลนี้ไม่ได้ลงท้ายด้วย ${SCHOOL_EMAIL_DOMAIN} ต้องการเพิ่มต่อหรือไม่?`)) return;
     }
+    const dupSnap = await studentsRef.where("email", "==", email).limit(1).get();
+    if (!dupSnap.empty) { alert("มีอีเมลนี้อยู่ในรายชื่อแล้ว"); return; }
     try {
       await studentsRef.add({ name, email });
       document.getElementById("newStudentName").value = "";
