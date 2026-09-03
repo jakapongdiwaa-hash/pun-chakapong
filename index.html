@@ -867,6 +867,7 @@
       <div>
         <label for="fCapture" class="capture-btn" id="captureLabel" style="display:inline-block;">📷 ถ่ายรูปยืนยันตัวตนวันนี้</label>
         <input type="file" id="fCapture" accept="image/*" capture="environment" style="display:none;">
+        <button type="button" class="capture-btn" id="cancelSubmitBtn" style="display:none; background:var(--coral);">ยกเลิก</button>
       </div>
       <p class="capture-hint">ถ่ายจากแอปกล้องของเครื่องได้เลย (สลับกล้องหน้า-หลัง หรือถ่ายใหม่ได้ตามปกติ)</p>
 
@@ -1380,19 +1381,23 @@
     const doc = await attendanceRef.doc(docId).get();
     const statusPreview = document.getElementById("statusPreview");
     const captureLabel = document.getElementById("captureLabel");
+    const cancelSubmitBtn = document.getElementById("cancelSubmitBtn");
 
     const data = doc.exists ? doc.data() : null;
     const photoHtml = (data && data.photoUrl) ? `<img src="${escapeHtml(data.photoUrl)}" alt="รูปที่ส่ง" class="submitted-photo-preview">` : "";
+    const hasSubmission = data && (data.status === "ส่งแล้ว" || data.status === "ลา");
+
     if (data && data.status === "ส่งแล้ว") {
       statusPreview.innerHTML = `<span class="status-preview submitted">✓ ส่งรูปยืนยันตัวตนวันนี้แล้ว</span>${photoHtml}`;
-      captureLabel.textContent = "📷 ถ่ายรูปใหม่อีกครั้ง";
     } else if (data && data.status === "ลา") {
       statusPreview.innerHTML = `<span class="status-preview leave">🟡 แจ้งลาวันนี้แล้ว${data.reason ? ` (${escapeHtml(data.reason)})` : ""}</span>${photoHtml}`;
-      captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     } else {
       statusPreview.innerHTML = '<span class="status-preview pending">ยังไม่ได้ส่งรูปวันนี้</span>';
-      captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     }
+
+    captureLabel.style.display = hasSubmission ? "none" : "inline-block";
+    cancelSubmitBtn.style.display = hasSubmission ? "inline-block" : "none";
+    captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
   }
 
   const leaveToggleLink = document.getElementById("leaveToggleLink");
@@ -1483,6 +1488,24 @@
       captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     } finally {
       e.target.value = "";
+    }
+  });
+
+  document.getElementById("cancelSubmitBtn").addEventListener("click", async () => {
+    if (!currentStudent) return;
+    if (!confirm("ยืนยันยกเลิกรายการที่ส่งไว้วันนี้? การยกเลิกไม่สามารถย้อนกลับได้")) return;
+
+    try {
+      const date = dateInput.value || todayStr();
+      const docId = `${date}_${currentStudent.id}`;
+      await attendanceRef.doc(docId).delete();
+      selfMsg.textContent = "ยกเลิกรายการเรียบร้อยแล้ว";
+      selfMsg.className = "form-msg ok";
+      refreshSelfStatus();
+    } catch (err) {
+      console.error(err);
+      selfMsg.textContent = "ยกเลิกไม่สำเร็จ กรุณาลองใหม่";
+      selfMsg.className = "form-msg error";
     }
   });
 
