@@ -455,6 +455,15 @@
   .status-preview.pending{background:rgba(100,116,139,.15); color:var(--gray);}
   .status-preview.leave{background:rgba(34,211,238,.15); color:#0E7490;}
 
+  .submitted-photo-preview{
+    display:block;
+    max-width:220px;
+    width:100%;
+    border-radius:10px;
+    margin:10px auto 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.2);
+  }
+
   .leave-toggle-link{
     font-size:13px;
     color:var(--purple);
@@ -849,6 +858,10 @@
         <div class="field" style="margin-bottom:10px;">
           <label for="leaveReason">เหตุผลที่ลา</label>
           <input type="text" id="leaveReason" placeholder="เช่น ป่วย, ธุระที่บ้าน">
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label for="leavePhoto">แนบรูป (ไม่บังคับ เช่น ใบลา/ใบรับรองแพทย์)</label>
+          <input type="file" id="leavePhoto" accept="image/*">
         </div>
         <button type="button" class="capture-btn" id="submitLeaveBtn" style="background:var(--gold); color:var(--purple-deep);">ยืนยันแจ้งลา</button>
       </div>
@@ -1351,11 +1364,12 @@
     const captureLabel = document.getElementById("captureLabel");
 
     const data = doc.exists ? doc.data() : null;
+    const photoHtml = (data && data.photoUrl) ? `<img src="${escapeHtml(data.photoUrl)}" alt="รูปที่ส่ง" class="submitted-photo-preview">` : "";
     if (data && data.status === "ส่งแล้ว") {
-      statusPreview.innerHTML = '<span class="status-preview submitted">✓ ส่งรูปยืนยันตัวตนวันนี้แล้ว</span>';
+      statusPreview.innerHTML = `<span class="status-preview submitted">✓ ส่งรูปยืนยันตัวตนวันนี้แล้ว</span>${photoHtml}`;
       captureLabel.textContent = "📷 ถ่ายรูปใหม่อีกครั้ง";
     } else if (data && data.status === "ลา") {
-      statusPreview.innerHTML = `<span class="status-preview leave">🟡 แจ้งลาวันนี้แล้ว${data.reason ? ` (${escapeHtml(data.reason)})` : ""}</span>`;
+      statusPreview.innerHTML = `<span class="status-preview leave">🟡 แจ้งลาวันนี้แล้ว${data.reason ? ` (${escapeHtml(data.reason)})` : ""}</span>${photoHtml}`;
       captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     } else {
       statusPreview.innerHTML = '<span class="status-preview pending">ยังไม่ได้ส่งรูปวันนี้</span>';
@@ -1366,6 +1380,7 @@
   const leaveToggleLink = document.getElementById("leaveToggleLink");
   const leaveForm = document.getElementById("leaveForm");
   const leaveReason = document.getElementById("leaveReason");
+  const leavePhoto = document.getElementById("leavePhoto");
   const submitLeaveBtn = document.getElementById("submitLeaveBtn");
 
   leaveToggleLink.addEventListener("click", () => {
@@ -1387,6 +1402,9 @@
     selfMsg.className = "form-msg";
 
     try {
+      const file = leavePhoto.files[0];
+      const photoUrl = file ? await uploadImageToImgbb(file) : "";
+
       const date = dateInput.value || todayStr();
       const docId = `${date}_${currentStudent.id}`;
       await attendanceRef.doc(docId).set({
@@ -1395,6 +1413,7 @@
         date: date,
         status: "ลา",
         reason: reason,
+        photoUrl: photoUrl,
         submittedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
@@ -1402,6 +1421,7 @@
       selfMsg.className = "form-msg ok";
       leaveForm.style.display = "none";
       leaveReason.value = "";
+      leavePhoto.value = "";
       refreshSelfStatus();
     } catch (err) {
       console.error(err);
