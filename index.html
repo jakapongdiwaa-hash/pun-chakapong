@@ -708,6 +708,10 @@
 </head>
 <body>
 
+<div id="inAppWarning" style="display:none; background:var(--coral); color:#fff; text-align:center; padding:10px 16px; font-family:'Sarabun',sans-serif; font-size:13px; font-weight:600;">
+  ⚠️ คุณเปิดเว็บนี้จากแอปแชท (LINE/Messenger/Facebook) ซึ่งอาจทำให้ล็อกอินหรือปุ่มบางอย่างกดไม่ติด — กดเมนู ⋮ หรือ ••• มุมขวาบน แล้วเลือก "เปิดในเบราว์เซอร์" เพื่อใช้งานได้เต็มรูปแบบ
+</div>
+
 <header>
   <div class="header-deco header-deco-left" aria-hidden="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -835,9 +839,10 @@
       </div>
       <div id="statusPreview"></div>
       <div>
-        <button type="button" class="capture-btn" id="openCameraBtn">📷 ถ่ายรูปยืนยันตัวตนวันนี้</button>
+        <label for="fCapture" class="capture-btn" id="captureLabel" style="display:inline-block;">📷 ถ่ายรูปยืนยันตัวตนวันนี้</label>
+        <input type="file" id="fCapture" accept="image/*" capture="environment" style="display:none;">
       </div>
-      <p class="capture-hint">ต้องถ่ายจากกล้องสดในเว็บนี้เท่านั้น ไม่สามารถอัปโหลดรูปเก่าได้</p>
+      <p class="capture-hint">ถ่ายจากแอปกล้องของเครื่องได้เลย (สลับกล้องหน้า-หลัง หรือถ่ายใหม่ได้ตามปกติ)</p>
 
       <p class="leave-toggle-link" id="leaveToggleLink">หรือแจ้งลาวันนี้แทน</p>
       <div id="leaveForm" style="display:none; margin-top:8px;">
@@ -934,22 +939,6 @@
   </div>
 </div>
 
-<!-- ===== Camera capture modal ===== -->
-<div class="modal-backdrop" id="cameraModal">
-  <div class="modal-box">
-    <video id="camVideo" autoplay playsinline style="width:100%; border-radius:8px; background:#000; margin-bottom:14px;"></video>
-    <img id="camPreview" src="" alt="รูปที่ถ่าย" style="width:100%; border-radius:8px; margin-bottom:14px; display:none;">
-    <canvas id="camCanvas" style="display:none;"></canvas>
-    <div class="form-msg" id="camMsg"></div>
-    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-      <button type="button" class="close-btn" id="camShootBtn">📷 ถ่ายรูป</button>
-      <button type="button" class="close-btn" id="camRetakeBtn" style="display:none; background:var(--gold); color:var(--purple-deep);">ถ่ายใหม่</button>
-      <button type="button" class="close-btn" id="camConfirmBtn" style="display:none; background:var(--sage);">ใช้รูปนี้</button>
-      <button type="button" class="close-btn" id="camCancelBtn" style="background:var(--coral);">ยกเลิก</button>
-    </div>
-  </div>
-</div>
-
 
 
 <!-- Firebase -->
@@ -957,6 +946,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+
+  (function(){
+    const ua = navigator.userAgent || "";
+    const isInAppBrowser = /Line\//i.test(ua) || /FBAN|FBAV/i.test(ua) || /Instagram/i.test(ua) || /MicroMessenger/i.test(ua);
+    if (isInAppBrowser) {
+      document.getElementById("inAppWarning").style.display = "block";
+    }
+  })();
 
   const firebaseConfig = {
     apiKey: "AIzaSyBMcc_avCIQsuSzEZAVBltTFJIOrYxdD3Y",
@@ -1351,18 +1348,18 @@
     const docId = `${date}_${currentStudent.id}`;
     const doc = await attendanceRef.doc(docId).get();
     const statusPreview = document.getElementById("statusPreview");
-    const openCameraBtn = document.getElementById("openCameraBtn");
+    const captureLabel = document.getElementById("captureLabel");
 
     const data = doc.exists ? doc.data() : null;
     if (data && data.status === "ส่งแล้ว") {
       statusPreview.innerHTML = '<span class="status-preview submitted">✓ ส่งรูปยืนยันตัวตนวันนี้แล้ว</span>';
-      openCameraBtn.textContent = "📷 ถ่ายรูปใหม่อีกครั้ง";
+      captureLabel.textContent = "📷 ถ่ายรูปใหม่อีกครั้ง";
     } else if (data && data.status === "ลา") {
       statusPreview.innerHTML = `<span class="status-preview leave">🟡 แจ้งลาวันนี้แล้ว${data.reason ? ` (${escapeHtml(data.reason)})` : ""}</span>`;
-      openCameraBtn.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
+      captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     } else {
       statusPreview.innerHTML = '<span class="status-preview pending">ยังไม่ได้ส่งรูปวันนี้</span>';
-      openCameraBtn.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
+      captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     }
   }
 
@@ -1416,86 +1413,17 @@
     }
   });
 
-  const cameraModal = document.getElementById("cameraModal");
-  const camVideo = document.getElementById("camVideo");
-  const camPreview = document.getElementById("camPreview");
-  const camCanvas = document.getElementById("camCanvas");
-  const camMsg = document.getElementById("camMsg");
-  const camShootBtn = document.getElementById("camShootBtn");
-  const camRetakeBtn = document.getElementById("camRetakeBtn");
-  const camConfirmBtn = document.getElementById("camConfirmBtn");
-  const camCancelBtn = document.getElementById("camCancelBtn");
-  let camStream = null;
-  let capturedBlob = null;
+  document.getElementById("fCapture").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentStudent) return;
 
-  function resetCameraModal(){
-    camVideo.style.display = "block";
-    camPreview.style.display = "none";
-    camShootBtn.style.display = "inline-block";
-    camRetakeBtn.style.display = "none";
-    camConfirmBtn.style.display = "none";
-    camMsg.textContent = "";
-    camMsg.className = "form-msg";
-    capturedBlob = null;
-  }
-
-  function closeCameraModal(){
-    if (camStream) {
-      camStream.getTracks().forEach(t => t.stop());
-      camStream = null;
-    }
-    cameraModal.style.display = "none";
-  }
-
-  async function openCameraModal(){
-    if (!currentStudent) return;
-    resetCameraModal();
-    cameraModal.style.display = "flex";
-    try {
-      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      camVideo.srcObject = camStream;
-    } catch (err) {
-      console.error(err);
-      camMsg.textContent = "เปิดกล้องไม่สำเร็จ กรุณาอนุญาตการเข้าถึงกล้องแล้วลองใหม่";
-      camMsg.classList.add("error");
-    }
-  }
-
-  document.getElementById("openCameraBtn").addEventListener("click", openCameraModal);
-  camCancelBtn.addEventListener("click", closeCameraModal);
-
-  camShootBtn.addEventListener("click", () => {
-    camCanvas.width = camVideo.videoWidth;
-    camCanvas.height = camVideo.videoHeight;
-    camCanvas.getContext("2d").drawImage(camVideo, 0, 0);
-    camCanvas.toBlob(blob => {
-      capturedBlob = blob;
-      camPreview.src = URL.createObjectURL(blob);
-      camVideo.style.display = "none";
-      camPreview.style.display = "block";
-      camShootBtn.style.display = "none";
-      camRetakeBtn.style.display = "inline-block";
-      camConfirmBtn.style.display = "inline-block";
-    }, "image/jpeg", 0.9);
-  });
-
-  camRetakeBtn.addEventListener("click", () => {
-    camVideo.style.display = "block";
-    camPreview.style.display = "none";
-    camShootBtn.style.display = "inline-block";
-    camRetakeBtn.style.display = "none";
-    camConfirmBtn.style.display = "none";
-    capturedBlob = null;
-  });
-
-  camConfirmBtn.addEventListener("click", async () => {
-    if (!capturedBlob || !currentStudent) return;
-    camConfirmBtn.disabled = true;
-    camMsg.textContent = "กำลังอัปโหลด...";
-    camMsg.className = "form-msg";
+    selfMsg.textContent = "";
+    selfMsg.className = "form-msg";
+    const captureLabel = document.getElementById("captureLabel");
+    captureLabel.textContent = "กำลังอัปโหลด...";
 
     try {
-      const imageUrl = await uploadImageToImgbb(capturedBlob);
+      const imageUrl = await uploadImageToImgbb(file);
       const date = dateInput.value || todayStr();
       const docId = `${date}_${currentStudent.id}`;
       await attendanceRef.doc(docId).set({
@@ -1508,15 +1436,15 @@
       }, { merge: true });
 
       selfMsg.textContent = "บันทึกเรียบร้อยแล้ว";
-      selfMsg.className = "form-msg ok";
+      selfMsg.classList.add("ok");
       refreshSelfStatus();
-      closeCameraModal();
     } catch (err) {
       console.error(err);
-      camMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
-      camMsg.classList.add("error");
+      selfMsg.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+      selfMsg.classList.add("error");
+      captureLabel.textContent = "📷 ถ่ายรูปยืนยันตัวตนวันนี้";
     } finally {
-      camConfirmBtn.disabled = false;
+      e.target.value = "";
     }
   });
 
