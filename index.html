@@ -556,6 +556,23 @@
   .student-card.absent{border-left-color:var(--coral);}
   .student-card.pending{border-left-color:var(--gray);}
 
+  .student-photo{
+    width:100%;
+    aspect-ratio:4/3;
+    object-fit:cover;
+    border-radius:8px;
+    background:#DCE6F2;
+    display:block;
+    margin-bottom:10px;
+  }
+  .student-photo.placeholder{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#7C8CA6;
+    font-size:12px;
+  }
+
   .student-card .s-no{
     position:absolute;
     top:10px; right:10px;
@@ -1258,6 +1275,7 @@
   logoutLink.addEventListener("click", () => auth.signOut());
 
   const CLASS_ROOM = "ม.4/8";
+  const CLASS_SIZE = 40;
 
   const selfRegisterPanel = document.getElementById("selfRegisterPanel");
   const regNo = document.getElementById("regNo");
@@ -1519,9 +1537,14 @@
       else if (status === "ลา") cardClass = "leave";
       else if (status === "ขาด") cardClass = "absent";
 
+      const photoHtml = att && att.photoUrl
+        ? `<img class="student-photo" src="${escapeHtml(att.photoUrl)}" alt="${escapeHtml(student.name)}">`
+        : `<div class="student-photo placeholder">ยังไม่มีรูป</div>`;
+
       const card = document.createElement("div");
       card.className = `student-card ${cardClass}`;
       card.innerHTML = `
+        ${photoHtml}
         ${student.no ? `<span class="s-no">#${escapeHtml(student.no)}</span>` : ""}
         <p class="s-name">${escapeHtml(student.name)}</p>
         <p class="s-status">${escapeHtml(status)}</p>
@@ -1538,7 +1561,7 @@
       rosterGrid.appendChild(card);
     });
 
-    rosterSummary.textContent = `ส่งแล้ว ${submittedCount} / ${rosterList.length} คน (วันที่ ${date})`;
+    rosterSummary.textContent = `ส่งแล้ว ${submittedCount} / ${CLASS_SIZE} คน (วันที่ ${date})`;
     rosterGrid._attendanceByStudent = attendanceByStudent;
   }
 
