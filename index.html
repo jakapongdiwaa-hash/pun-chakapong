@@ -160,7 +160,6 @@
     border-radius:8px;
     background:#fff;
     outline:none;
-    transition:border-color .15s;
   }
   input:focus, select:focus{border-color:var(--gold);}
 
@@ -1053,7 +1052,7 @@
   }
   .mode-nav button.active{
     background:var(--gold);
-    border-color:var(--gold);
+    border-color:#fff;
     color:var(--purple-deep);
   }
   .view{display:none;}
@@ -1061,11 +1060,12 @@
 
 
   /* ===== ลูกเล่น: ทุกปุ่มขยายตอนชี้/แตะ และยุบลงตอนกด ===== */
+  /* ใช้เส้นโค้งแบบสปริง ปล่อยนิ้วแล้วมันจะเด้งเลยนิดนึงก่อนเข้าที่ = ความรู้สึก "ขยับเข้าออก" */
   button,
   .capture-btn,
   .google-btn,
   label.capture-btn{
-    transition:transform .18s cubic-bezier(.28,.11,.32,1),
+    transition:transform .26s cubic-bezier(.34,1.56,.64,1),
                box-shadow .18s, background .15s, color .15s, border-color .15s, opacity .15s;
   }
 
@@ -1101,6 +1101,35 @@
   .detail-dots button:hover{transform:scale(1.5);}
   .detail-dots button:active{transform:scale(1.2);}
 
+  /* ===== ลูกเล่น: ช่องกรอกขยับตอนชี้/ตอนคลิกเข้าไปพิมพ์ ===== */
+  input[type=text], input[type=url], input[type=file], input[type=date],
+  input[type=month], select, textarea{
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1),
+               box-shadow .2s, border-color .15s;
+  }
+
+  input[type=text]:hover, input[type=url]:hover, input[type=file]:hover,
+  input[type=date]:hover, input[type=month]:hover, select:hover, textarea:hover{
+    transform:translateY(-2px) scale(1.01);
+    box-shadow:0 6px 14px rgba(11,27,58,.13);
+    border-color:#93A7C0;
+  }
+
+  /* ตอนคลิกเข้าไปพิมพ์ ยกขึ้นพร้อมวงแหวนฟ้ารอบช่อง */
+  input[type=text]:focus, input[type=url]:focus, input[type=file]:focus,
+  input[type=date]:focus, input[type=month]:focus, select:focus, textarea:focus{
+    transform:translateY(-3px) scale(1.015);
+    box-shadow:0 8px 20px rgba(11,27,58,.18), 0 0 0 3px rgba(34,211,238,.35);
+    border-color:var(--gold);
+  }
+
+  /* ช่องที่แก้ไม่ได้ (เช่น ระดับชั้น ม.4/8) ไม่ต้องขยับ */
+  input:disabled:hover, select:disabled:hover, textarea:disabled:hover{
+    transform:none;
+    box-shadow:none;
+    border-color:#C7D2E0;
+  }
+
   /* ===== ลูกเล่น: กรอบใหญ่ๆ ลอยขึ้นตอนชี้ ===== */
   .card-panel,
   .showcase{
@@ -1118,13 +1147,16 @@
 
   /* เครื่องที่ตั้งค่าลดการเคลื่อนไหว ให้ปิดลูกเล่นทั้งหมด */
   @media (prefers-reduced-motion: reduce){
-    button, .capture-btn, .google-btn, .card-panel, .showcase, .item-card{
+    button, .capture-btn, .google-btn, .card-panel, .showcase, .item-card,
+    input, select, textarea{
       transition:none;
     }
     button:hover, button:active,
     .capture-btn:hover, .google-btn:hover,
     .card-panel:hover, .showcase:hover,
-    .item-card:hover, .item-card.is-touched{
+    .item-card:hover, .item-card.is-touched,
+    input:hover, input:focus, select:hover, select:focus,
+    textarea:hover, textarea:focus{
       transform:none;
     }
     .detail-nextpage:hover, .detail-nextpage:active{transform:translateY(-50%);}
