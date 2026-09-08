@@ -220,6 +220,15 @@
   .form-msg.error{color:var(--coral);}
   .form-msg.ok{color:var(--sage);}
 
+  /* ===== Showcase (แผงโชว์รายการของหาย) ===== */
+  .showcase{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:22px;
+    padding:32px 26px 38px;
+    margin-top:50px;
+  }
+
   .board-title{
     font-family:'Kanit', sans-serif;
     color:#fff;
@@ -228,15 +237,22 @@
     font-weight:600;
     margin:56px 0 20px;
   }
+  /* หัวข้อในแผงโชว์ ชิดซ้ายและไม่ต้องเว้นบน */
+  .showcase .board-title{
+    text-align:left;
+    font-size:25px;
+    margin:0 0 22px;
+  }
+  .board-title .dim{color:rgba(255,255,255,.5); font-weight:500;}
 
   /* ===== Filter bar ===== */
   .filter-bar{
     display:flex;
     flex-wrap:wrap;
-    justify-content:center;
+    justify-content:flex-start;
     align-items:center;
     gap:10px;
-    margin-bottom:28px;
+    margin-bottom:26px;
   }
   .filter-btn{
     font-family:'Kanit',sans-serif;
@@ -267,44 +283,63 @@
 
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
-    gap:26px;
+    grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
+    gap:20px;
   }
 
   .item-card{
-    background:var(--paper);
-    border-radius:4px;
-    padding:16px 16px 20px;
-    box-shadow:0 10px 20px rgba(0,0,0,.3);
+    background:#fff;
+    border-radius:18px;
+    padding:26px 22px 20px;
     position:relative;
-    transform:rotate(var(--tilt, -1.2deg));
+    display:flex;
+    flex-direction:column;
+    cursor:pointer;
+    box-shadow:0 2px 10px rgba(0,0,0,.28);
+    transition:transform .25s cubic-bezier(.28,.11,.32,1), box-shadow .25s;
   }
-  .item-card:nth-child(3n+1){--tilt:-1.4deg;}
-  .item-card:nth-child(3n+2){--tilt:1deg;}
-  .item-card:nth-child(3n){--tilt:-0.6deg;}
+  /* แตะ/ชี้ที่กล่องไหน กล่องนั้นขยายขึ้นเล็กน้อย */
+  .item-card:hover, .item-card.is-touched{
+    transform:scale(1.022) translateY(-4px);
+    box-shadow:0 20px 38px rgba(0,0,0,.42);
+  }
 
   .item-card.resolved{opacity:.55;}
 
-  .item-card::before{
-    content:"";
-    position:absolute;
-    top:-10px; left:50%;
-    transform:translateX(-50%) rotate(-6deg);
-    width:52px; height:20px;
-    background:rgba(255,255,255,.55);
-    border:1px solid rgba(255,255,255,.7);
+  .item-name{
+    font-family:'Kanit',sans-serif;
+    font-weight:600;
+    font-size:21px;
+    line-height:1.35;
+    color:var(--ink);
+    margin:0 0 4px;
   }
 
-  .item-photo{
+  .item-sub{
+    font-size:13px;
+    color:var(--gray);
+    margin:0 0 16px;
+  }
+
+  /* กรอบสำหรับแสดงรูป */
+  .item-photo-frame{
+    position:relative;
     width:100%;
     aspect-ratio:4/3;
-    object-fit:cover;
-    border-radius:2px;
-    background:#DCE6F2;
-    display:block;
-    margin-bottom:12px;
+    border-radius:12px;
+    background:var(--paper);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:16px;
   }
-
+  .item-photo{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+  }
   .item-photo.placeholder{
     display:flex;
     align-items:center;
@@ -313,35 +348,82 @@
     font-size:13px;
   }
 
+  /* ป้าย "มาดูกันเลย" เล็กๆ พร้อมลูกศร โผล่ตอนแตะ */
+  .peek-pill{
+    position:absolute;
+    left:50%; bottom:14px;
+    transform:translate(-50%, 8px);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(11,27,58,.9);
+    color:#fff;
+    font-family:'Kanit',sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    padding:7px 14px;
+    border-radius:18px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .22s, transform .22s cubic-bezier(.28,.11,.32,1);
+    backdrop-filter:blur(6px);
+  }
+  .item-card:hover .peek-pill,
+  .item-card.is-touched .peek-pill{
+    opacity:1;
+    transform:translate(-50%, 0);
+  }
+  .peek-pill .arrow{font-size:14px; line-height:1;}
+
+  .dot{width:9px; height:9px; border-radius:50%;}
+  .dot.lost{background:var(--coral);}
+  .dot.found{background:var(--sage);}
+  .dot.returned{background:var(--returned);}
+
+  .item-card-foot{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:auto;
+  }
+
+  .see-btn{
+    font-family:'Kanit',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    padding:8px 18px;
+    border-radius:20px;
+    border:none;
+    background:var(--purple);
+    color:#fff;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.15s;
+  }
+  .see-btn:hover{background:var(--purple-deep);}
+
   .stamp{
     position:absolute;
-    top:12px; right:10px;
+    top:16px; right:16px;
     font-family:'Kanit',sans-serif;
-    font-weight:700;
+    font-weight:600;
     font-size:11px;
-    letter-spacing:.05em;
-    padding:4px 9px;
-    border-radius:3px;
-    transform:rotate(6deg);
+    letter-spacing:.03em;
+    padding:4px 10px;
+    border-radius:12px;
     color:#fff;
   }
   .stamp.lost{background:var(--coral);}
   .stamp.found{background:var(--sage);}
   .stamp.returned{background:var(--returned);}
 
-  .item-name{
-    font-family:'Kanit',sans-serif;
-    font-weight:600;
-    font-size:17px;
-    color:var(--purple-deep);
-    margin:0 0 8px;
-  }
-
   .item-meta{
     font-size:13px;
-    color:#334155;
-    line-height:1.7;
-    margin:0 0 10px;
+    color:#475569;
+    line-height:1.6;
+    margin:0;
   }
   .item-meta b{color:var(--ink);}
 
@@ -349,14 +431,16 @@
     display:flex;
     flex-wrap:wrap;
     gap:8px;
-    margin-top:10px;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid #E2E8F0;
   }
   .item-actions button{
     font-family:'Sarabun',sans-serif;
     font-size:12px;
     font-weight:600;
-    padding:7px 11px;
-    border-radius:6px;
+    padding:6px 11px;
+    border-radius:14px;
     border:1.5px solid #C7D2E0;
     background:#fff;
     cursor:pointer;
@@ -377,9 +461,254 @@
     font-size:14px;
   }
 
+  /* ===== หน้ารายละเอียด (สไตล์หน้าโปรดักต์) ===== */
+  .detail-view{
+    position:fixed;
+    inset:0;
+    z-index:120;
+    overflow-y:auto;
+    display:none;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(37,99,235,.10), transparent 42%),
+      var(--board);
+  }
+  .detail-view.open{display:block;}
+
+  .detail-topbar{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:rgba(6,11,24,.86);
+    backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:1px solid rgba(255,255,255,.09);
+    padding:12px 20px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .detail-close{
+    flex:0 0 auto;
+    width:34px; height:34px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,.1);
+    color:#fff;
+    font-size:16px;
+    line-height:1;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .detail-close:hover{background:rgba(255,255,255,.2);}
+
+  /* แถบรายการของหายด้านบน */
+  .detail-nav{
+    flex:1 1 auto;
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    background:rgba(255,255,255,.07);
+    border-radius:22px;
+    padding:5px;
+    scrollbar-width:none;
+  }
+  .detail-nav::-webkit-scrollbar{display:none;}
+  .detail-nav button{
+    flex:0 0 auto;
+    font-family:'Kanit',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:8px 17px;
+    border-radius:18px;
+    border:none;
+    background:transparent;
+    color:rgba(255,255,255,.78);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.18s;
+  }
+  .detail-nav button:hover{background:rgba(255,255,255,.1); color:#fff;}
+  .detail-nav button.active{
+    background:var(--gold);
+    color:var(--purple-deep);
+    font-weight:600;
+  }
+
+  .detail-stage{
+    max-width:1020px;
+    margin:0 auto;
+    padding:46px 24px 70px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    align-items:center;
+  }
+
+  /* --- ฝั่งรูป --- */
+  .detail-media{text-align:center;}
+  .detail-photo-frame{
+    width:100%;
+    aspect-ratio:1/1;
+    max-height:420px;
+    background:var(--paper);
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .detail-photo-frame img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+  }
+  .detail-photo-frame .no-photo{
+    color:#7C8CA6;
+    font-size:14px;
+  }
+
+  .detail-dots{
+    display:flex;
+    justify-content:center;
+    gap:9px;
+    margin:22px 0 26px;
+  }
+  .detail-dots button{
+    width:9px; height:9px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,.28);
+    padding:0;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .detail-dots button.active{background:var(--gold);}
+
+  .detail-sender-label{
+    font-size:13px;
+    color:rgba(255,255,255,.55);
+    margin:0 0 8px;
+  }
+  .detail-sender{
+    font-family:'Kanit',sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:#fff;
+    margin:0;
+  }
+
+  /* --- ฝั่งข้อมูล --- */
+  .detail-info{position:relative; padding-left:44px;}
+
+  .detail-nextpage{
+    position:absolute;
+    left:-8px; top:50%;
+    transform:translateY(-50%);
+    width:46px; height:46px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,.1);
+    color:#fff;
+    font-size:19px;
+    line-height:1;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .detail-nextpage:hover{background:var(--gold); color:var(--purple-deep);}
+
+  .detail-title{
+    font-family:'Kanit',sans-serif;
+    font-size:38px;
+    font-weight:600;
+    color:#fff;
+    margin:0 0 10px;
+    line-height:1.2;
+  }
+  .detail-lede{
+    font-size:15px;
+    color:rgba(255,255,255,.66);
+    margin:0 0 26px;
+  }
+  .detail-lede b{color:#fff; font-weight:600;}
+  .detail-lede .pill{
+    display:inline-block;
+    font-family:'Kanit',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:#fff;
+    padding:3px 11px;
+    border-radius:12px;
+    margin-right:8px;
+  }
+  .detail-lede .pill.lost{background:var(--coral);}
+  .detail-lede .pill.found{background:var(--sage);}
+  .detail-lede .pill.returned{background:var(--returned);}
+
+  .detail-specs{margin:0 0 30px;}
+  .spec-row{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+    padding:18px 0;
+    border-top:1px solid rgba(255,255,255,.1);
+  }
+  .spec-row:last-child{border-bottom:1px solid rgba(255,255,255,.1);}
+  .spec-icon{
+    flex:0 0 auto;
+    width:34px; height:34px;
+    border-radius:9px;
+    background:rgba(255,255,255,.08);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+  }
+  .spec-text{
+    font-size:14.5px;
+    line-height:1.65;
+    color:rgba(255,255,255,.88);
+    margin:0;
+  }
+  .spec-text b{font-weight:600; color:#fff;}
+  .spec-text .muted{color:rgba(255,255,255,.5);}
+
+  .detail-next-item{
+    font-family:'Kanit',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    padding:11px 24px;
+    border-radius:22px;
+    border:none;
+    background:var(--purple);
+    color:#fff;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .detail-next-item:hover{background:var(--gold); color:var(--purple-deep);}
+
+  .detail-pagehint{
+    font-size:12.5px;
+    color:rgba(255,255,255,.5);
+    margin:14px 0 0;
+  }
+
+  @media (max-width:820px){
+    .detail-stage{grid-template-columns:1fr; gap:30px; padding:30px 20px 60px;}
+    .detail-info{padding-left:0;}
+    .detail-nextpage{
+      position:static;
+      transform:none;
+      margin-bottom:16px;
+    }
+    .detail-title{font-size:29px;}
+    .detail-photo-frame{aspect-ratio:4/3;}
+  }
+
   @media (max-width:600px){
     form#reportForm{grid-template-columns:1fr;}
     .card-panel{padding:22px;}
+    .showcase{padding:24px 16px 30px; border-radius:16px;}
+    .board-title{font-size:21px;}
   }
 
 
@@ -816,20 +1145,22 @@
     </form>
   </div>
 
-  <h2 class="board-title">รายการที่แจ้งไว้</h2>
+  <div class="showcase">
+    <h2 class="board-title">ทุกรายการ <span class="dim">แตะดูรายละเอียดได้เลย</span></h2>
 
-  <div class="filter-bar">
-    <button type="button" class="filter-btn active" data-filter="ทั้งหมด">ทั้งหมด</button>
-    <button type="button" class="filter-btn" data-filter="ของหาย">ของหาย</button>
-    <button type="button" class="filter-btn" data-filter="เจอของ">เจอของ</button>
-    <label class="hide-resolved-toggle" id="hideResolvedWrap">
-      <input type="checkbox" id="hideResolvedChk">
-      ซ่อนรายการที่พบเจ้าของแล้ว
-    </label>
-  </div>
+    <div class="filter-bar">
+      <button type="button" class="filter-btn active" data-filter="ทั้งหมด">ทั้งหมด</button>
+      <button type="button" class="filter-btn" data-filter="ของหาย">ของหาย</button>
+      <button type="button" class="filter-btn" data-filter="เจอของ">เจอของ</button>
+      <label class="hide-resolved-toggle" id="hideResolvedWrap">
+        <input type="checkbox" id="hideResolvedChk">
+        ซ่อนรายการที่พบเจ้าของแล้ว
+      </label>
+    </div>
 
-  <div class="grid" id="itemGrid">
-    <p class="empty-state">กำลังโหลดข้อมูล...</p>
+    <div class="grid" id="itemGrid">
+      <p class="empty-state">กำลังโหลดข้อมูล...</p>
+    </div>
   </div>
 
 
@@ -959,6 +1290,32 @@
 
   </div>
 
+</div>
+
+<!-- ===== หน้ารายละเอียดรายการของหาย ===== -->
+<div class="detail-view" id="detailView">
+  <div class="detail-topbar">
+    <button type="button" class="detail-close" id="detailCloseBtn" aria-label="ปิด">✕</button>
+    <div class="detail-nav" id="detailNav"></div>
+  </div>
+
+  <div class="detail-stage">
+    <div class="detail-media">
+      <div class="detail-photo-frame" id="detailPhotoFrame"></div>
+      <div class="detail-dots" id="detailDots"></div>
+      <p class="detail-sender-label">ผู้แจ้งรายการนี้</p>
+      <p class="detail-sender" id="detailSender"></p>
+    </div>
+
+    <div class="detail-info">
+      <button type="button" class="detail-nextpage" id="detailNextPageBtn" aria-label="หน้าถัดไป">›</button>
+      <h2 class="detail-title" id="detailTitle"></h2>
+      <p class="detail-lede" id="detailLede"></p>
+      <div class="detail-specs" id="detailSpecs"></div>
+      <button type="button" class="detail-next-item" id="detailNextItemBtn">ดูรายการต่อไป →</button>
+      <p class="detail-pagehint" id="detailPageHint"></p>
+    </div>
+  </div>
 </div>
 
 <!-- ===== Photo modal ===== -->
@@ -1143,6 +1500,23 @@
     itemGrid.innerHTML = '<p class="empty-state">โหลดข้อมูลไม่สำเร็จ</p>';
   });
 
+  // รายการที่แสดงอยู่จริงหลังกรองแล้ว — หน้ารายละเอียดใช้ชุดเดียวกันนี้ในการเลื่อนไปมา
+  let visibleReports = [];
+
+  function statusKey(d) {
+    return d.resolved ? "returned" : (d.status === "ของหาย" ? "lost" : "found");
+  }
+
+  function statusText(d) {
+    return d.resolved ? "คืนแล้ว" : (d.status || "-");
+  }
+
+  function formatCreatedAt(d) {
+    const ts = d.createdAt;
+    if (!ts || typeof ts.toDate !== "function") return "ยังไม่ระบุ";
+    return ts.toDate().toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" });
+  }
+
   function renderGrid() {
     let list = allReports;
 
@@ -1153,24 +1527,27 @@
       list = list.filter(d => !d.resolved);
     }
 
+    visibleReports = list;
+
     if (list.length === 0) {
       itemGrid.innerHTML = '<p class="empty-state">ไม่มีรายการที่ตรงกับตัวกรองนี้</p>';
+      if (detailView.classList.contains("open")) closeDetail();
       return;
     }
 
     itemGrid.innerHTML = "";
-    list.forEach(d => {
+    list.forEach((d, index) => {
       const isLost = d.status === "ของหาย";
 
       const card = document.createElement("div");
       card.className = "item-card" + (d.resolved ? " resolved" : "");
+      card.dataset.index = index;
 
       const photoHtml = d.imageUrl
         ? `<img class="item-photo" src="${escapeHtml(d.imageUrl)}" alt="${escapeHtml(d.itemName || '')}" onerror="this.classList.add('placeholder'); this.removeAttribute('src'); this.alt='ไม่พบรูปภาพ';">`
         : `<div class="item-photo placeholder">ไม่มีรูปภาพ</div>`;
 
-      const stampClass = d.resolved ? "returned" : (isLost ? "lost" : "found");
-      const stampText = d.resolved ? "คืนแล้ว" : (d.status || "");
+      const sKey = statusKey(d);
 
       let actionsHtml = `<div class="item-actions">`;
       if (!d.resolved) {
@@ -1182,15 +1559,20 @@
       actionsHtml += `</div>`;
 
       card.innerHTML = `
-        <span class="stamp ${stampClass}">${escapeHtml(stampText)}</span>
-        ${photoHtml}
+        <span class="stamp ${sKey}">${escapeHtml(statusText(d))}</span>
         <p class="item-name">${escapeHtml(d.itemName || '(ไม่ระบุชื่อของ)')}</p>
-        <p class="item-meta">
-          <b>ผู้แจ้ง:</b> ${escapeHtml(d.name || '-')}<br>
-          <b>สถานที่:</b> ${escapeHtml(d.location || '-')}<br>
-          <b>เวลา:</b> ${escapeHtml(d.time || '-')}<br>
-          <b>ติดต่อ:</b> ${escapeHtml(d.contact || '-')}
-        </p>
+        <p class="item-sub">แจ้งโดย ${escapeHtml(d.name || '-')}</p>
+        <div class="item-photo-frame">
+          ${photoHtml}
+          <span class="peek-pill">มาดูกันเลย <span class="arrow">›</span></span>
+        </div>
+        <div class="item-card-foot">
+          <p class="item-meta">
+            <span class="dot ${sKey}" style="display:inline-block; vertical-align:middle; margin-right:6px;"></span>${escapeHtml(isLost ? 'หายที่' : 'เจอที่')} ${escapeHtml(d.location || '-')}<br>
+            <span style="padding-left:15px;">เวลา ${escapeHtml(d.time || '-')}</span>
+          </p>
+          <button type="button" class="see-btn" data-action="open">ดูรายละเอียด</button>
+        </div>
         ${actionsHtml}
       `;
       itemGrid.appendChild(card);
@@ -1199,7 +1581,13 @@
 
   itemGrid.addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
-    if (!btn) return;
+
+    // แตะที่การ์ด (ที่ไม่ใช่ปุ่มแอดมิน) = เปิดหน้ารายละเอียด
+    if (!btn || btn.dataset.action === "open") {
+      const card = e.target.closest(".item-card");
+      if (card) openDetail(Number(card.dataset.index));
+      return;
+    }
 
     const id = btn.dataset.id;
     const action = btn.dataset.action;
@@ -1233,6 +1621,169 @@
       }
     }
   });
+
+
+  /* ===== หน้ารายละเอียด: 2 หน้า — หน้าแรกบอกว่าใครทำอะไรหาย หน้าสองบอกว่าใครส่งมา ===== */
+  const detailView = document.getElementById("detailView");
+  const detailNav = document.getElementById("detailNav");
+  const detailPhotoFrame = document.getElementById("detailPhotoFrame");
+  const detailDots = document.getElementById("detailDots");
+  const detailSender = document.getElementById("detailSender");
+  const detailTitle = document.getElementById("detailTitle");
+  const detailLede = document.getElementById("detailLede");
+  const detailSpecs = document.getElementById("detailSpecs");
+  const detailPageHint = document.getElementById("detailPageHint");
+
+  const DETAIL_PAGES = 2;
+  let detailIndex = 0;
+  let detailPage = 0;
+
+  function openDetail(index) {
+    if (!visibleReports[index]) return;
+    detailIndex = index;
+    detailPage = 0;
+    detailView.classList.add("open");
+    document.body.style.overflow = "hidden";
+    detailView.scrollTop = 0;
+    renderDetail();
+  }
+
+  function closeDetail() {
+    detailView.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function goToItem(index) {
+    if (!visibleReports.length) return;
+    detailIndex = (index + visibleReports.length) % visibleReports.length;
+    detailPage = 0;
+    renderDetail();
+  }
+
+  function goToPage(page) {
+    detailPage = page;
+    renderDetail();
+  }
+
+  function renderDetail() {
+    const d = visibleReports[detailIndex];
+    if (!d) { closeDetail(); return; }
+
+    const isLost = d.status === "ของหาย";
+    const sKey = statusKey(d);
+
+    // แถบด้านบน = รายการของที่แจ้งไว้ทั้งหมด กดสลับได้
+    detailNav.innerHTML = "";
+    visibleReports.forEach((r, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = r.itemName || "(ไม่ระบุชื่อของ)";
+      if (i === detailIndex) b.classList.add("active");
+      b.addEventListener("click", () => goToItem(i));
+      detailNav.appendChild(b);
+    });
+    const activePill = detailNav.querySelector("button.active");
+    if (activePill) activePill.scrollIntoView({ block: "nearest", inline: "center" });
+
+    // รูป
+    detailPhotoFrame.innerHTML = "";
+    if (d.imageUrl) {
+      const img = document.createElement("img");
+      img.src = d.imageUrl;
+      img.alt = d.itemName || "";
+      img.addEventListener("error", () => {
+        detailPhotoFrame.innerHTML = '<span class="no-photo">ไม่พบรูปภาพ</span>';
+      });
+      detailPhotoFrame.appendChild(img);
+    } else {
+      detailPhotoFrame.innerHTML = '<span class="no-photo">ไม่มีรูปภาพ</span>';
+    }
+
+    // ชื่อคนส่ง อยู่ใต้รูป
+    detailSender.textContent = d.name || "-";
+
+    // จุดสลับหน้า
+    detailDots.innerHTML = "";
+    for (let p = 0; p < DETAIL_PAGES; p++) {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `หน้า ${p + 1}`);
+      if (p === detailPage) dot.classList.add("active");
+      dot.addEventListener("click", () => goToPage(p));
+      detailDots.appendChild(dot);
+    }
+
+    if (detailPage === 0) {
+      // หน้า 1 — ใคร ทำอะไรหาย
+      detailTitle.textContent = d.itemName || "(ไม่ระบุชื่อของ)";
+      detailLede.innerHTML =
+        `<span class="pill ${sKey}">${escapeHtml(statusText(d))}</span>` +
+        `${escapeHtml(d.name || '-')} แจ้งไว้เมื่อ ${escapeHtml(formatCreatedAt(d))}`;
+      detailSpecs.innerHTML = `
+        <div class="spec-row">
+          <span class="spec-icon">🎒</span>
+          <p class="spec-text"><b>${escapeHtml(d.name || '-')}</b> ${isLost ? 'ทำ' : 'เจอ'} <b>${escapeHtml(d.itemName || '-')}</b>${isLost ? ' หาย' : ''}</p>
+        </div>
+        <div class="spec-row">
+          <span class="spec-icon">📍</span>
+          <p class="spec-text">${isLost ? 'หายที่' : 'เจอที่'} <b>${escapeHtml(d.location || '-')}</b></p>
+        </div>
+        <div class="spec-row">
+          <span class="spec-icon">🕐</span>
+          <p class="spec-text">เมื่อเวลา <b>${escapeHtml(d.time || '-')}</b> <span class="muted">· แจ้งเข้าระบบ ${escapeHtml(formatCreatedAt(d))}</span></p>
+        </div>
+        <div class="spec-row">
+          <span class="spec-icon">${d.resolved ? '✅' : '🔎'}</span>
+          <p class="spec-text">${d.resolved ? 'พบเจ้าของแล้ว' : 'ยังไม่พบเจ้าของ — ถ้าใครเห็น ช่วยติดต่อผู้แจ้งได้เลย'}</p>
+        </div>
+      `;
+    } else {
+      // หน้า 2 — ใครส่งมา ติดต่อยังไง
+      detailTitle.textContent = d.name || "(ไม่ระบุผู้แจ้ง)";
+      detailLede.innerHTML = `ผู้แจ้งรายการ <b>${escapeHtml(d.itemName || '-')}</b>`;
+      detailSpecs.innerHTML = `
+        <div class="spec-row">
+          <span class="spec-icon">👤</span>
+          <p class="spec-text">ผู้แจ้ง <b>${escapeHtml(d.name || '-')}</b></p>
+        </div>
+        <div class="spec-row">
+          <span class="spec-icon">💬</span>
+          <p class="spec-text">ติดต่อได้ที่ <b>${escapeHtml(d.contact || '-')}</b></p>
+        </div>
+        <div class="spec-row">
+          <span class="spec-icon">🗓</span>
+          <p class="spec-text">แจ้งเข้าระบบเมื่อ <b>${escapeHtml(formatCreatedAt(d))}</b></p>
+        </div>
+      `;
+    }
+
+    detailPageHint.textContent =
+      `หน้า ${detailPage + 1} จาก ${DETAIL_PAGES} · รายการที่ ${detailIndex + 1} จาก ${visibleReports.length}`;
+  }
+
+  document.getElementById("detailCloseBtn").addEventListener("click", closeDetail);
+
+  // ลูกศรกลม: หน้า 1 → หน้า 2 → รายการถัดไป
+  document.getElementById("detailNextPageBtn").addEventListener("click", () => {
+    if (detailPage < DETAIL_PAGES - 1) goToPage(detailPage + 1);
+    else goToItem(detailIndex + 1);
+  });
+
+  document.getElementById("detailNextItemBtn").addEventListener("click", () => goToItem(detailIndex + 1));
+
+  document.addEventListener("keydown", (e) => {
+    if (!detailView.classList.contains("open")) return;
+    if (e.key === "Escape") closeDetail();
+    else if (e.key === "ArrowRight") goToItem(detailIndex + 1);
+    else if (e.key === "ArrowLeft") goToItem(detailIndex - 1);
+  });
+
+  // บนมือถือ แตะการ์ดไหนให้การ์ดนั้นขยายเล็กๆ เหมือนตอนชี้เมาส์บนคอม
+  itemGrid.addEventListener("touchstart", (e) => {
+    document.querySelectorAll(".item-card.is-touched").forEach(c => c.classList.remove("is-touched"));
+    const card = e.target.closest(".item-card");
+    if (card) card.classList.add("is-touched");
+  }, { passive: true });
 
 
   const auth = firebase.auth();
