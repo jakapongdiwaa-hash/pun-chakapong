@@ -1059,6 +1059,77 @@
   .view{display:none;}
   .view.active{display:block;}
 
+
+  /* ===== ลูกเล่น: ทุกปุ่มขยายตอนชี้/แตะ และยุบลงตอนกด ===== */
+  button,
+  .capture-btn,
+  .google-btn,
+  label.capture-btn{
+    transition:transform .18s cubic-bezier(.28,.11,.32,1),
+               box-shadow .18s, background .15s, color .15s, border-color .15s, opacity .15s;
+  }
+
+  button:hover,
+  .submit-btn:hover,
+  .capture-btn:hover,
+  .google-btn:hover,
+  label.capture-btn:hover{
+    transform:scale(1.06);
+  }
+
+  button:active,
+  .submit-btn:active,
+  .capture-btn:active,
+  .google-btn:active,
+  label.capture-btn:active{
+    transform:scale(.95);
+  }
+
+  /* ปุ่มที่กดไม่ได้ ไม่ต้องขยับ */
+  button:disabled:hover,
+  button:disabled:active,
+  .submit-btn:disabled:hover,
+  .submit-btn:disabled:active{
+    transform:none;
+  }
+
+  /* ปุ่มลูกศรกลมในหน้ารายละเอียด จัดกลางด้วย translateY อยู่แล้ว ต้องต่อท้ายไม่ให้หลุดตำแหน่ง */
+  .detail-nextpage:hover{transform:translateY(-50%) scale(1.12);}
+  .detail-nextpage:active{transform:translateY(-50%) scale(.94);}
+
+  /* จุดสลับหน้าเล็กมาก ขยายแรงกว่าปุ่มอื่นถึงจะเห็น */
+  .detail-dots button:hover{transform:scale(1.5);}
+  .detail-dots button:active{transform:scale(1.2);}
+
+  /* ===== ลูกเล่น: กรอบใหญ่ๆ ลอยขึ้นตอนชี้ ===== */
+  .card-panel,
+  .showcase{
+    transition:transform .3s cubic-bezier(.28,.11,.32,1), box-shadow .3s, border-color .3s;
+  }
+  .card-panel:hover{
+    transform:translateY(-5px) scale(1.005);
+    box-shadow:0 28px 56px rgba(0,0,0,.4);
+  }
+  .showcase:hover{
+    transform:translateY(-4px);
+    border-color:rgba(34,211,238,.32);
+    box-shadow:0 24px 50px rgba(0,0,0,.34);
+  }
+
+  /* เครื่องที่ตั้งค่าลดการเคลื่อนไหว ให้ปิดลูกเล่นทั้งหมด */
+  @media (prefers-reduced-motion: reduce){
+    button, .capture-btn, .google-btn, .card-panel, .showcase, .item-card{
+      transition:none;
+    }
+    button:hover, button:active,
+    .capture-btn:hover, .google-btn:hover,
+    .card-panel:hover, .showcase:hover,
+    .item-card:hover, .item-card.is-touched{
+      transform:none;
+    }
+    .detail-nextpage:hover, .detail-nextpage:active{transform:translateY(-50%);}
+  }
+
 </style>
 </head>
 <body>
