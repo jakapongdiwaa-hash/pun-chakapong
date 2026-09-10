@@ -1538,7 +1538,7 @@
         <input type="file" id="fCapture" accept="image/*" capture="environment" style="display:none;">
         <button type="button" class="capture-btn" id="cancelSubmitBtn" style="display:none; background:var(--coral);">ยกเลิก</button>
       </div>
-      <p class="capture-hint">ถ่ายจากแอปกล้องของเครื่องได้เลย (สลับกล้องหน้า-หลัง หรือถ่ายใหม่ได้ตามปกติ)</p>
+      <p class="capture-hint"><span id="captureHintText">ถ่ายจากแอปกล้องของเครื่องได้เลย (สลับกล้องหน้า-หลัง หรือถ่ายใหม่ได้ตามปกติ)</span></p>
 
       <p class="leave-toggle-link" id="leaveToggleLink">หรือแจ้งลาวันนี้แทน</p>
       <div id="leaveForm" style="display:none; margin-top:8px;">
@@ -1662,6 +1662,22 @@
     <img id="modalPhoto" src="" alt="รูปยืนยันตัวตน">
     <p id="modalStudentName" style="font-family:'Kanit',sans-serif; color:var(--purple-deep); font-weight:600;"></p>
     <button type="button" class="close-btn" id="closeModalBtn">ปิด</button>
+  </div>
+</div>
+
+<!-- ===== กล้องในหน้าเว็บ (ใช้บนคอม ที่ไม่มีแอปกล้องให้เรียก) ===== -->
+<div class="modal-backdrop" id="cameraModal">
+  <div class="modal-box">
+    <video id="camVideo" autoplay playsinline muted style="width:100%; border-radius:8px; background:#000; margin-bottom:14px;"></video>
+    <img id="camPreview" src="" alt="รูปที่เพิ่งถ่าย" style="width:100%; border-radius:8px; margin-bottom:14px; display:none;">
+    <canvas id="camCanvas" style="display:none;"></canvas>
+    <div class="form-msg" id="camMsg"></div>
+    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+      <button type="button" class="close-btn" id="camShootBtn">📷 ถ่ายรูป</button>
+      <button type="button" class="close-btn" id="camRetakeBtn" style="display:none; background:var(--gold); color:var(--purple-deep);">ถ่ายใหม่</button>
+      <button type="button" class="close-btn" id="camConfirmBtn" style="display:none; background:var(--sage);">ใช้รูปนี้</button>
+      <button type="button" class="close-btn" id="camCancelBtn" style="background:var(--coral);">ยกเลิก</button>
+    </div>
   </div>
 </div>
 
@@ -2393,6 +2409,21 @@
     }
   });
 
+  // อัปโหลดรูปแล้วบันทึกว่ามาเรียน ใช้ร่วมกันทั้งกล้องมือถือและกล้องบนคอม
+  async function submitAttendancePhoto(fileOrBlob) {
+    const imageUrl = await uploadImageToImgbb(fileOrBlob);
+    const date = dateInput.value || todayStr();
+    const docId = `${date}_${currentStudent.id}`;
+    await attendanceRef.doc(docId).set({
+      studentId: currentStudent.id,
+      studentName: currentStudent.name,
+      date: date,
+      status: "ส่งแล้ว",
+      photoUrl: imageUrl,
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  }
+
   document.getElementById("fCapture").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file || !currentStudent) return;
@@ -2403,18 +2434,7 @@
     captureLabel.textContent = "กำลังอัปโหลด...";
 
     try {
-      const imageUrl = await uploadImageToImgbb(file);
-      const date = dateInput.value || todayStr();
-      const docId = `${date}_${currentStudent.id}`;
-      await attendanceRef.doc(docId).set({
-        studentId: currentStudent.id,
-        studentName: currentStudent.name,
-        date: date,
-        status: "ส่งแล้ว",
-        photoUrl: imageUrl,
-        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-
+      await submitAttendancePhoto(file);
       selfMsg.textContent = "บันทึกเรียบร้อยแล้ว";
       selfMsg.classList.add("ok");
       refreshSelfStatus();
@@ -2427,6 +2447,125 @@
       e.target.value = "";
     }
   });
+
+  /* ===== กล้องในหน้าเว็บ =====
+     มือถือมีแอปกล้องอยู่แล้ว ปล่อยให้ <label for="fCapture"> ทำงานตามปกติ
+     คอมไม่มีแอปกล้อง ถ้าไม่ดักไว้จะได้แค่หน้าต่างเลือกไฟล์ ซึ่งอัปรูปเก่าได้
+     จึงเปิดกล้องผ่าน getUserMedia แทน แล้วส่งเข้าทางเดียวกับมือถือ */
+  (function(){
+    const cameraModal = document.getElementById("cameraModal");
+    const camVideo = document.getElementById("camVideo");
+    const camPreview = document.getElementById("camPreview");
+    const camCanvas = document.getElementById("camCanvas");
+    const camMsg = document.getElementById("camMsg");
+    const camShootBtn = document.getElementById("camShootBtn");
+    const camRetakeBtn = document.getElementById("camRetakeBtn");
+    const camConfirmBtn = document.getElementById("camConfirmBtn");
+    const camCancelBtn = document.getElementById("camCancelBtn");
+    const captureLabel = document.getElementById("captureLabel");
+
+    let camStream = null;
+    let capturedBlob = null;
+
+    // เครื่องที่มีแอปกล้องของตัวเอง ให้ใช้ทางเดิม
+    function hasNativeCameraApp() {
+      return window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+    }
+    function canOpenWebcam() {
+      return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+
+    function showLiveView() {
+      camVideo.style.display = "block";
+      camPreview.style.display = "none";
+      camShootBtn.style.display = "inline-block";
+      camRetakeBtn.style.display = "none";
+      camConfirmBtn.style.display = "none";
+      camConfirmBtn.disabled = false;
+      capturedBlob = null;
+    }
+
+    function closeCameraModal() {
+      if (camStream) {
+        camStream.getTracks().forEach(t => t.stop());
+        camStream = null;
+      }
+      if (camPreview.src.startsWith("blob:")) URL.revokeObjectURL(camPreview.src);
+      cameraModal.style.display = "none";
+    }
+
+    async function openCameraModal() {
+      if (!currentStudent) return;
+      showLiveView();
+      camMsg.textContent = "";
+      camMsg.className = "form-msg";
+      cameraModal.style.display = "flex";
+      try {
+        camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        camVideo.srcObject = camStream;
+      } catch (err) {
+        console.error(err);
+        camMsg.textContent = "เปิดกล้องไม่ได้ กรุณากดอนุญาตให้เว็บใช้กล้อง แล้วลองใหม่";
+        camMsg.classList.add("error");
+        camShootBtn.style.display = "none";
+      }
+    }
+
+    captureLabel.addEventListener("click", (e) => {
+      if (hasNativeCameraApp() || !canOpenWebcam()) return; // ปล่อยให้เปิดแอปกล้อง
+      e.preventDefault();
+      openCameraModal();
+    });
+
+    // บนคอมปุ่มไม่ได้เปิดแอปกล้อง คำอธิบายใต้ปุ่มจึงต้องเปลี่ยนตาม
+    if (!hasNativeCameraApp() && canOpenWebcam()) {
+      const hint = document.getElementById("captureHintText");
+      if (hint) hint.textContent = "กดแล้วกล้องจะเปิดขึ้นในหน้าเว็บ ถ่ายเสร็จเลือกได้ว่าจะใช้รูปนี้หรือถ่ายใหม่";
+    }
+
+    camCancelBtn.addEventListener("click", closeCameraModal);
+
+    camShootBtn.addEventListener("click", () => {
+      if (!camVideo.videoWidth) return;
+      camCanvas.width = camVideo.videoWidth;
+      camCanvas.height = camVideo.videoHeight;
+      camCanvas.getContext("2d").drawImage(camVideo, 0, 0);
+      camCanvas.toBlob(blob => {
+        capturedBlob = blob;
+        camPreview.src = URL.createObjectURL(blob);
+        camVideo.style.display = "none";
+        camPreview.style.display = "block";
+        camShootBtn.style.display = "none";
+        camRetakeBtn.style.display = "inline-block";
+        camConfirmBtn.style.display = "inline-block";
+      }, "image/jpeg", 0.9);
+    });
+
+    camRetakeBtn.addEventListener("click", showLiveView);
+
+    camConfirmBtn.addEventListener("click", async () => {
+      if (!capturedBlob || !currentStudent) return;
+      camConfirmBtn.disabled = true;
+      camMsg.textContent = "กำลังอัปโหลด...";
+      camMsg.className = "form-msg";
+      try {
+        await submitAttendancePhoto(capturedBlob);
+        closeCameraModal();
+        selfMsg.textContent = "บันทึกเรียบร้อยแล้ว";
+        selfMsg.className = "form-msg ok";
+        refreshSelfStatus();
+      } catch (err) {
+        console.error(err);
+        camMsg.textContent = "อัปโหลดไม่สำเร็จ กรุณาลองใหม่";
+        camMsg.classList.add("error");
+        camConfirmBtn.disabled = false;
+      }
+    });
+
+    cameraModal.addEventListener("click", (e) => {
+      if (e.target === cameraModal) closeCameraModal();
+    });
+  })();
 
   document.getElementById("cancelSubmitBtn").addEventListener("click", async () => {
     if (!currentStudent) return;
