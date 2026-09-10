@@ -1035,41 +1035,142 @@
   }
 
 
-  /* ===== Exploded hardware view ===== */
-  .exploded-wrap{
-    max-width:560px;
-    margin:26px auto 0;
-    background:#fff;
+  /* ===== PCB guide board ===== */
+  .pcb-guide{
+    position:relative;
+    margin:0 0 22px;
+    padding:30px 16px 22px;
+    background:
+      radial-gradient(circle at 12% 12%, rgba(34,211,238,.10), transparent 42%),
+      linear-gradient(180deg,#FFFFFF,#F4F8FD);
     border:1px solid var(--line);
-    border-radius:20px;
+    border-radius:18px;
     box-shadow:var(--shadow);
-    padding:10px 10px 14px;
-    cursor:pointer;
+    overflow:hidden;
     outline:none;
+    transition:box-shadow .4s ease, border-color .3s ease;
   }
-  .exploded-wrap:focus-visible{border-color:var(--purple); box-shadow:0 0 0 4px rgba(37,99,235,.15);}
-  .exploded-wrap svg{display:block; width:100%; height:auto;}
-  .exploded-wrap .ex-layer{
-    transition:transform .5s cubic-bezier(.22,1,.36,1);
-  }
-  .exploded-wrap .ex-label{
-    opacity:0;
-    transition:opacity .4s ease .12s;
-  }
-  .exploded-wrap.open .ex-label{opacity:1;}
-  .exploded-wrap.open .ex-1{transform:translate(52px,-64px);}
-  .exploded-wrap.open .ex-2{transform:translate(34px,-32px);}
-  .exploded-wrap.open .ex-3{transform:translate(16px,0);}
-  .exploded-wrap.open .ex-4{transform:translate(-2px,30px);}
-  .exploded-wrap.open .ex-5{transform:translate(-20px,60px);}
-  .ex-hint{
-    text-align:center;
+  .pcb-guide:hover,
+  .pcb-guide.is-open{border-color:#BEE3F0; box-shadow:0 16px 40px rgba(11,27,58,.10);}
+  .pcb-guide:focus-visible{border-color:var(--blue); box-shadow:0 0 0 4px rgba(37,99,235,.15);}
+  .pcb-eyebrow{
+    display:block;
     font-family:var(--mono);
     font-size:10px;
-    letter-spacing:.14em;
+    letter-spacing:.18em;
     text-transform:uppercase;
-    color:var(--gray);
-    margin:6px 0 0;
+    color:var(--accent);
+    margin:0 0 14px;
+    position:relative;
+    z-index:2;
+  }
+  .pcb-traces{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:1;
+    pointer-events:none;
+  }
+  .pcb-trace{fill:none; stroke:#C08552; stroke-width:1; opacity:.42;}
+  .pcb-trace.cy{stroke:#0E7490; opacity:.3;}
+  .pcb-pad{fill:#FFFFFF; stroke:#C08552; stroke-width:1;}
+  .pcb-via{fill:#FFFFFF; stroke:#0E7490; stroke-width:1;}
+  .pcb-pulse{
+    fill:none;
+    stroke:var(--gold);
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-dasharray:24 700;
+    stroke-dashoffset:724;
+    animation:pcbFlow 6s linear infinite;
+    animation-delay:var(--d,0s);
+  }
+  @keyframes pcbFlow{ to{ stroke-dashoffset:0; } }
+
+  .pcb-chips{
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+    gap:14px 12px;
+  }
+  .pcb-chip{
+    position:relative;
+    background:#FFFFFF;
+    border:1px solid #CBD5E1;
+    border-radius:10px;
+    padding:12px 12px 13px;
+    outline:none;
+    cursor:default;
+    transform-origin:50% 60%;
+    transition:transform .55s cubic-bezier(.22,1,.36,1), opacity .35s ease,
+               box-shadow .4s ease, border-color .3s ease;
+    transition-delay:calc(var(--i,0) * 60ms);
+  }
+  /* silkscreen pin legs on two edges */
+  .pcb-chip::before,
+  .pcb-chip::after{
+    content:"";
+    position:absolute;
+    left:16px;
+    right:16px;
+    height:4px;
+    background:repeating-linear-gradient(90deg,#94A3B8 0 3px,transparent 3px 10px);
+    opacity:.75;
+  }
+  .pcb-chip::before{top:-4px;}
+  .pcb-chip::after{bottom:-4px;}
+  .pcb-step{
+    display:block;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.16em;
+    color:var(--accent);
+    margin:0 0 5px;
+  }
+  .pcb-chip p{
+    margin:0;
+    font-family:'Sarabun',sans-serif;
+    font-size:13px;
+    line-height:1.55;
+    color:var(--ink);
+  }
+
+  /* board entered -> chips lift & fan into an isometric stack */
+  .pcb-guide:hover .pcb-chip,
+  .pcb-guide.is-open .pcb-chip{
+    transform:translate(calc(var(--i,0) * 5px), calc(var(--i,0) * -5px)) scale(1.02);
+    box-shadow:0 12px 26px rgba(11,27,58,.13);
+    border-color:#B9D8E6;
+  }
+  /* one chip entered -> zoom it, dim the rest */
+  .pcb-chips:hover .pcb-chip{opacity:.4; transform:translate(calc(var(--i,0) * 5px), calc(var(--i,0) * -5px)) scale(.97);}
+  .pcb-chips .pcb-chip:hover,
+  .pcb-chip:focus-visible,
+  .pcb-chip.is-zoom{
+    opacity:1;
+    transform:translate(calc(var(--i,0) * 5px), calc(var(--i,0) * -5px)) scale(1.15);
+    border-color:var(--gold);
+    box-shadow:0 20px 40px rgba(14,116,144,.20);
+    transition-delay:0s;
+    z-index:4;
+  }
+  .pcb-guide:hover .pcb-pulse,
+  .pcb-guide.is-open .pcb-pulse{stroke-width:2.2; animation-duration:3.4s;}
+
+  @media (max-width:600px){
+    .pcb-guide{padding:24px 12px 18px;}
+    .pcb-chips{grid-template-columns:1fr;}
+    .pcb-guide.is-open .pcb-chip{transform:translateY(0) scale(1);}
+    .pcb-chip.is-zoom{transform:scale(1.04) !important;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .pcb-pulse{animation:none; stroke-dasharray:none; stroke-dashoffset:0; opacity:.5;}
+    .pcb-guide *,
+    .pcb-chip{transition:none !important;}
+    .pcb-chip{opacity:1 !important; transform:none !important; box-shadow:0 6px 16px rgba(11,27,58,.08);}
   }
 
   /* ===== Mode nav ===== */
@@ -1201,7 +1302,6 @@
       transform:none;
     }
     .detail-nextpage:hover, .detail-nextpage:active{transform:translateY(-50%);}
-    .exploded-wrap .ex-layer, .exploded-wrap .ex-label{transition:none;}
   }
 
 </style>
@@ -1231,59 +1331,6 @@
   <h1 id="pageTitle">กระดานแจ้งของหาย</h1>
   <p id="pageSubtitle">แจ้งของหาย หรือแจ้งว่าเจอของ ให้เพื่อนๆ ได้เห็น</p>
 
-<div class="exploded-wrap" id="explodedView" tabindex="0" role="button" aria-expanded="false" aria-label="ภาพโครงสร้างสมาร์ทโฟนแบบแยกชั้น กดเพื่อแยกชั้นและดูชื่อชิ้นส่วน">
-  <svg viewBox="0 0 560 360" role="img" aria-label="แผนภาพชั้นส่วนประกอบของสมาร์ทโฟน 5 ชั้น">
-    <defs>
-      <linearGradient id="exGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#DBEAFE"/><stop offset="1" stop-color="#BAE6FD"/></linearGradient>
-      <linearGradient id="exLcd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1E3A8A"/><stop offset="1" stop-color="#2563EB"/></linearGradient>
-      <linearGradient id="exBat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A5F3EF"/><stop offset="1" stop-color="#06B6D4"/></linearGradient>
-      <linearGradient id="exBoard" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E2E8F0"/><stop offset="1" stop-color="#CBD5E1"/></linearGradient>
-      <linearGradient id="exBack" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F8FAFC"/><stop offset="1" stop-color="#E2E8F0"/></linearGradient>
-    </defs>
-
-    <g class="ex-layer ex-5">
-      <path d="M150 250 l100 -50 l100 50 l-100 50 Z" fill="url(#exBack)" stroke="#94A3B8" stroke-width="1.2"/>
-      <g class="ex-label">
-        <line x1="352" y1="250" x2="404" y2="250" stroke="#94A3B8" stroke-width="1"/>
-        <text x="410" y="254" font-family="Kanit, sans-serif" font-size="13" fill="#0B1B3A">ฝาหลัง</text>
-      </g>
-    </g>
-    <g class="ex-layer ex-4">
-      <path d="M150 222 l100 -50 l100 50 l-100 50 Z" fill="url(#exBoard)" stroke="#94A3B8" stroke-width="1.2"/>
-      <path d="M215 222 l35 -18 l35 18 l-35 18 Z" fill="#64748B" opacity=".55"/>
-      <path d="M182 236 l24 -12 l16 8 l-24 12 Z" fill="#0F9D74" opacity=".7"/>
-      <g class="ex-label">
-        <line x1="352" y1="222" x2="404" y2="222" stroke="#94A3B8" stroke-width="1"/>
-        <text x="410" y="226" font-family="Kanit, sans-serif" font-size="13" fill="#0B1B3A">แผงวงจรหลัก</text>
-      </g>
-    </g>
-    <g class="ex-layer ex-3">
-      <path d="M150 194 l100 -50 l100 50 l-100 50 Z" fill="url(#exBat)" stroke="#0891B2" stroke-width="1.2"/>
-      <path d="M196 194 l54 -27 l54 27 l-54 27 Z" fill="#FFFFFF" opacity=".35"/>
-      <g class="ex-label">
-        <line x1="352" y1="194" x2="404" y2="194" stroke="#94A3B8" stroke-width="1"/>
-        <text x="410" y="198" font-family="Kanit, sans-serif" font-size="13" fill="#0B1B3A">แบตเตอรี่</text>
-      </g>
-    </g>
-    <g class="ex-layer ex-2">
-      <path d="M150 166 l100 -50 l100 50 l-100 50 Z" fill="url(#exLcd)" stroke="#1E3A8A" stroke-width="1.2"/>
-      <path d="M172 166 l78 -39 l78 39 l-78 39 Z" fill="#3B82F6" opacity=".55"/>
-      <g class="ex-label">
-        <line x1="352" y1="166" x2="404" y2="166" stroke="#94A3B8" stroke-width="1"/>
-        <text x="410" y="170" font-family="Kanit, sans-serif" font-size="13" fill="#0B1B3A">จอแสดงผล LCD</text>
-      </g>
-    </g>
-    <g class="ex-layer ex-1">
-      <path d="M150 138 l100 -50 l100 50 l-100 50 Z" fill="url(#exGlass)" stroke="#7DD3FC" stroke-width="1.2" opacity=".92"/>
-      <path d="M186 138 l64 -32 l18 9 l-64 32 Z" fill="#FFFFFF" opacity=".6"/>
-      <g class="ex-label">
-        <line x1="352" y1="138" x2="404" y2="138" stroke="#94A3B8" stroke-width="1"/>
-        <text x="410" y="142" font-family="Kanit, sans-serif" font-size="13" fill="#0B1B3A">กระจกหน้าจอ</text>
-      </g>
-    </g>
-  </svg>
-  <p class="ex-hint" id="explodedHint">แตะเพื่อแยกชั้น →</p>
-</div>
   <div class="mode-nav">
     <button type="button" class="active" data-view="view-lostfound">กระดานของหาย</button>
     <button type="button" data-view="view-attendance">เช็คชื่อยืนยันตัวตน</button>
@@ -1293,6 +1340,52 @@
 <div class="wrap">
 
   <div class="view active" id="view-lostfound">
+
+  <div class="pcb-guide" id="lfGuide-board" tabindex="0" role="group" aria-label="วิธีใช้งาน แผงวงจรคำแนะนำ">
+    <svg class="pcb-traces" viewBox="0 0 600 220" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="pcb-trace" d="M4 26 H120 l22 22 H300 l18 -18 H470 l20 20 H596"/>
+      <path class="pcb-pulse" style="--d:0s" d="M4 26 H120 l22 22 H300 l18 -18 H470 l20 20 H596"/>
+      <path class="pcb-trace cy" d="M4 108 H86 l24 -24 H236 l20 20 H420 l24 24 H596"/>
+      <path class="pcb-pulse" style="--d:1.5s" d="M4 108 H86 l24 -24 H236 l20 20 H420 l24 24 H596"/>
+      <path class="pcb-trace" d="M4 196 H150 l26 -26 H330 l22 22 H500 l18 -18 H596"/>
+      <path class="pcb-pulse" style="--d:3s" d="M4 196 H150 l26 -26 H330 l22 22 H500 l18 -18 H596"/>
+      <path class="pcb-trace cy" d="M60 4 V60 l20 20 V150 l-18 18 V216"/>
+      <path class="pcb-pulse" style="--d:4.2s" d="M60 4 V60 l20 20 V150 l-18 18 V216"/>
+      <path class="pcb-trace" d="M540 4 V52 l-20 20 V140 l18 18 V216"/>
+      <path class="pcb-pulse" style="--d:2.4s" d="M540 4 V52 l-20 20 V140 l18 18 V216"/>
+      <circle class="pcb-pad" cx="120" cy="26" r="3.4"/>
+      <circle class="pcb-pad" cx="470" cy="26" r="3.4"/>
+      <circle class="pcb-via" cx="110" cy="84" r="2.8"/>
+      <circle class="pcb-via" cx="420" cy="104" r="2.8"/>
+      <circle class="pcb-pad" cx="176" cy="170" r="3.4"/>
+      <circle class="pcb-pad" cx="500" cy="192" r="3.4"/>
+      <circle class="pcb-via" cx="80" cy="80" r="2.8"/>
+      <circle class="pcb-via" cx="520" cy="72" r="2.8"/>
+    </svg>
+    <span class="pcb-eyebrow">HOW IT WORKS // วิธีใช้งาน</span>
+    <div class="pcb-chips" id="lfGuide-chips">
+        <div class="pcb-chip" id="lfGuide-chip-1" tabindex="0" style="--i:0">
+          <span class="pcb-step">STEP 01</span>
+          <p>เลือกว่า "ของหาย" หรือ "เจอของ"</p>
+        </div>
+        <div class="pcb-chip" id="lfGuide-chip-2" tabindex="0" style="--i:1">
+          <span class="pcb-step">STEP 02</span>
+          <p>กรอกสถานที่ เวลา ช่องทางติดต่อ</p>
+        </div>
+        <div class="pcb-chip" id="lfGuide-chip-3" tabindex="0" style="--i:2">
+          <span class="pcb-step">STEP 03</span>
+          <p>แนบรูป (ไม่บังคับ)</p>
+        </div>
+        <div class="pcb-chip" id="lfGuide-chip-4" tabindex="0" style="--i:3">
+          <span class="pcb-step">STEP 04</span>
+          <p>กด "แจ้งข้อมูล" ขึ้นกระดานทันที</p>
+        </div>
+        <div class="pcb-chip" id="lfGuide-chip-5" tabindex="0" style="--i:4">
+          <span class="pcb-step">STEP 05</span>
+          <p>เจอเจ้าของ กด "พบเจ้าของแล้ว"</p>
+        </div>
+    </div>
+  </div>
 
 
   <!-- ===== Report form ===== -->
@@ -1366,6 +1459,52 @@
   </div>
 
   <div class="view" id="view-attendance">
+
+  <div class="pcb-guide" id="atGuide-board" tabindex="0" role="group" aria-label="วิธีใช้งาน แผงวงจรคำแนะนำ">
+    <svg class="pcb-traces" viewBox="0 0 600 220" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="pcb-trace" d="M4 26 H120 l22 22 H300 l18 -18 H470 l20 20 H596"/>
+      <path class="pcb-pulse" style="--d:0s" d="M4 26 H120 l22 22 H300 l18 -18 H470 l20 20 H596"/>
+      <path class="pcb-trace cy" d="M4 108 H86 l24 -24 H236 l20 20 H420 l24 24 H596"/>
+      <path class="pcb-pulse" style="--d:1.5s" d="M4 108 H86 l24 -24 H236 l20 20 H420 l24 24 H596"/>
+      <path class="pcb-trace" d="M4 196 H150 l26 -26 H330 l22 22 H500 l18 -18 H596"/>
+      <path class="pcb-pulse" style="--d:3s" d="M4 196 H150 l26 -26 H330 l22 22 H500 l18 -18 H596"/>
+      <path class="pcb-trace cy" d="M60 4 V60 l20 20 V150 l-18 18 V216"/>
+      <path class="pcb-pulse" style="--d:4.2s" d="M60 4 V60 l20 20 V150 l-18 18 V216"/>
+      <path class="pcb-trace" d="M540 4 V52 l-20 20 V140 l18 18 V216"/>
+      <path class="pcb-pulse" style="--d:2.4s" d="M540 4 V52 l-20 20 V140 l18 18 V216"/>
+      <circle class="pcb-pad" cx="120" cy="26" r="3.4"/>
+      <circle class="pcb-pad" cx="470" cy="26" r="3.4"/>
+      <circle class="pcb-via" cx="110" cy="84" r="2.8"/>
+      <circle class="pcb-via" cx="420" cy="104" r="2.8"/>
+      <circle class="pcb-pad" cx="176" cy="170" r="3.4"/>
+      <circle class="pcb-pad" cx="500" cy="192" r="3.4"/>
+      <circle class="pcb-via" cx="80" cy="80" r="2.8"/>
+      <circle class="pcb-via" cx="520" cy="72" r="2.8"/>
+    </svg>
+    <span class="pcb-eyebrow">HOW IT WORKS // วิธีใช้งาน</span>
+    <div class="pcb-chips" id="atGuide-chips">
+        <div class="pcb-chip" id="atGuide-chip-1" tabindex="0" style="--i:0">
+          <span class="pcb-step">STEP 01</span>
+          <p>เข้าสู่ระบบด้วยอีเมล @sappha.ac.th</p>
+        </div>
+        <div class="pcb-chip" id="atGuide-chip-2" tabindex="0" style="--i:1">
+          <span class="pcb-step">STEP 02</span>
+          <p>ลงทะเบียนเลขที่และชื่อ ครั้งแรกครั้งเดียว</p>
+        </div>
+        <div class="pcb-chip" id="atGuide-chip-3" tabindex="0" style="--i:2">
+          <span class="pcb-step">STEP 03</span>
+          <p>กดถ่ายรูป เปิดแอปกล้องของเครื่อง</p>
+        </div>
+        <div class="pcb-chip" id="atGuide-chip-4" tabindex="0" style="--i:3">
+          <span class="pcb-step">STEP 04</span>
+          <p>ลาได้ พร้อมเขียนเหตุผล</p>
+        </div>
+        <div class="pcb-chip" id="atGuide-chip-5" tabindex="0" style="--i:4">
+          <span class="pcb-step">STEP 05</span>
+          <p>ส่งผิด กด "ยกเลิก" แล้วส่งใหม่</p>
+        </div>
+    </div>
+  </div>
 
 
   <!-- ===== Login / self check-in ===== -->
@@ -1533,18 +1672,49 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+/* PCB guide: touch fallback + keyboard nav (self-contained) */
 (function(){
-  var ex=document.getElementById('explodedView');
-  if(!ex) return;
-  var hint=document.getElementById('explodedHint');
-  function toggle(){
-    var open=ex.classList.toggle('open');
-    ex.setAttribute('aria-expanded', open?'true':'false');
-    if(hint) hint.textContent = open ? 'แตะเพื่อรวมชั้นกลับ →' : 'แตะเพื่อแยกชั้น →';
-  }
-  ex.addEventListener('click', toggle);
-  ex.addEventListener('keydown', function(e){
-    if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){ e.preventDefault(); toggle(); }
+  var boards = document.querySelectorAll('.pcb-guide');
+  if(!boards.length) return;
+  var coarse = window.matchMedia && window.matchMedia('(hover:none)').matches;
+  Array.prototype.forEach.call(boards, function(board){
+    var chips = board.querySelectorAll('.pcb-chip');
+    function clearZoom(){
+      Array.prototype.forEach.call(chips, function(c){ c.classList.remove('is-zoom'); });
+    }
+    if(coarse){
+      board.addEventListener('click', function(e){
+        var chip = e.target.closest ? e.target.closest('.pcb-chip') : null;
+        if(!board.classList.contains('is-open')){ board.classList.add('is-open'); return; }
+        if(chip){
+          var on = chip.classList.contains('is-zoom');
+          clearZoom();
+          if(!on) chip.classList.add('is-zoom');
+        }
+      });
+    }
+    board.addEventListener('focusin', function(){ board.classList.add('is-open'); });
+    board.addEventListener('keydown', function(e){
+      var list = Array.prototype.slice.call(chips);
+      var idx = list.indexOf(document.activeElement);
+      if(e.key === 'Enter' || e.key === ' '){
+        if(idx > -1){ e.preventDefault(); var on = list[idx].classList.contains('is-zoom'); clearZoom(); if(!on) list[idx].classList.add('is-zoom'); }
+        else { e.preventDefault(); board.classList.add('is-open'); if(list[0]) list[0].focus(); }
+      } else if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+        e.preventDefault(); (list[idx + 1] || list[0]).focus();
+      } else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+        e.preventDefault(); (idx > 0 ? list[idx - 1] : list[list.length - 1]).focus();
+      } else if(e.key === 'Escape'){
+        clearZoom(); board.classList.remove('is-open');
+      }
+    });
+  });
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('.pcb-guide')) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.pcb-guide'), function(b){
+      b.classList.remove('is-open');
+      Array.prototype.forEach.call(b.querySelectorAll('.pcb-chip'), function(c){ c.classList.remove('is-zoom'); });
+    });
   });
 })();
 </script>
