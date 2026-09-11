@@ -1322,55 +1322,67 @@
     background:rgba(37,99,235,.07);
     pointer-events:none !important;
   }
-  .ambient-circuit-line.h1{top:18%; left:0; width:100%; height:1px;}
-  .ambient-circuit-line.h2{top:64%; left:0; width:100%; height:1px;}
+  .ambient-circuit-line.h1{top:12%; left:0; width:100%; height:1px;}
+  .ambient-circuit-line.h2{top:38%; left:0; width:100%; height:1px;}
+  .ambient-circuit-line.h3{top:64%; left:0; width:100%; height:1px;}
+  .ambient-circuit-line.h4{top:88%; left:0; width:100%; height:1px;}
   .ambient-circuit-line.v1{left:8%; top:0; width:1px; height:100%;}
-  .ambient-circuit-line.v2{right:8%; top:0; width:1px; height:100%;}
+  .ambient-circuit-line.v2{left:38%; top:0; width:1px; height:100%;}
+  .ambient-circuit-line.v3{right:38%; top:0; width:1px; height:100%;}
+  .ambient-circuit-line.v4{right:8%; top:0; width:1px; height:100%;}
   .ambient-circuit-pulse{
     position:absolute;
     border-radius:999px;
     pointer-events:none !important;
     filter:drop-shadow(0 0 5px var(--gold)) drop-shadow(0 0 10px rgba(37,99,235,.7));
   }
-  .ambient-circuit-pulse.ph1{
-    top:-1px; left:0; width:110px; height:3px;
+  .ambient-circuit-pulse.pha{
+    top:-1px; left:0; width:120px; height:3px;
     background:linear-gradient(90deg, transparent, var(--gold) 60%, var(--purple) 85%, transparent);
-    animation:circuitTravelH1 14s ease-in-out infinite alternate;
+    animation:circuitTravelH 6s linear infinite;
   }
-  .ambient-circuit-pulse.ph2{
+  .ambient-circuit-pulse.phb{
     top:-1px; right:0; width:130px; height:3px;
     background:linear-gradient(90deg, transparent, var(--purple) 25%, var(--gold) 65%, transparent);
-    animation:circuitTravelH2 17s ease-in-out infinite alternate;
+    animation:circuitTravelHR 7s linear infinite;
   }
-  .ambient-circuit-pulse.pv1{
-    left:-1px; top:0; width:3px; height:110px;
+  .ambient-circuit-pulse.pva{
+    left:-1px; top:0; width:3px; height:120px;
     background:linear-gradient(180deg, transparent, var(--gold) 60%, var(--purple) 85%, transparent);
-    animation:circuitTravelV1 15s ease-in-out infinite alternate;
+    animation:circuitTravelV 6.5s linear infinite;
   }
-  .ambient-circuit-pulse.pv2{
+  .ambient-circuit-pulse.pvb{
     left:-1px; bottom:0; width:3px; height:120px;
     background:linear-gradient(180deg, transparent, var(--purple) 25%, var(--gold) 65%, transparent);
-    animation:circuitTravelV2 19s ease-in-out infinite alternate;
+    animation:circuitTravelVR 7.5s linear infinite;
   }
-  @keyframes circuitTravelH1{
-    0%{transform:translateX(-120px); opacity:0;}
-    12%{opacity:.85;} 88%{opacity:.85;}
-    100%{transform:translateX(calc(100vw + 120px)); opacity:0;}
+  .ambient-circuit-line.h1 .ambient-circuit-pulse{animation-delay:0s;}
+  .ambient-circuit-line.h2 .ambient-circuit-pulse{animation-delay:-1.6s;}
+  .ambient-circuit-line.h3 .ambient-circuit-pulse{animation-delay:-3.2s;}
+  .ambient-circuit-line.h4 .ambient-circuit-pulse{animation-delay:-4.8s;}
+  .ambient-circuit-line.v1 .ambient-circuit-pulse{animation-delay:0s;}
+  .ambient-circuit-line.v2 .ambient-circuit-pulse{animation-delay:-1.8s;}
+  .ambient-circuit-line.v3 .ambient-circuit-pulse{animation-delay:-3.6s;}
+  .ambient-circuit-line.v4 .ambient-circuit-pulse{animation-delay:-5.4s;}
+  @keyframes circuitTravelH{
+    0%{transform:translateX(-130px); opacity:0;}
+    10%{opacity:.85;} 90%{opacity:.85;}
+    100%{transform:translateX(calc(100vw + 130px)); opacity:0;}
   }
-  @keyframes circuitTravelH2{
-    0%{transform:translateX(130px); opacity:0;}
-    12%{opacity:.8;} 88%{opacity:.8;}
-    100%{transform:translateX(calc(-100vw - 130px)); opacity:0;}
+  @keyframes circuitTravelHR{
+    0%{transform:translateX(140px); opacity:0;}
+    10%{opacity:.8;} 90%{opacity:.8;}
+    100%{transform:translateX(calc(-100vw - 140px)); opacity:0;}
   }
-  @keyframes circuitTravelV1{
-    0%{transform:translateY(-120px); opacity:0;}
-    15%{opacity:.8;} 85%{opacity:.8;}
-    100%{transform:translateY(calc(100vh + 120px)); opacity:0;}
+  @keyframes circuitTravelV{
+    0%{transform:translateY(-130px); opacity:0;}
+    10%{opacity:.8;} 90%{opacity:.8;}
+    100%{transform:translateY(calc(100vh + 130px)); opacity:0;}
   }
-  @keyframes circuitTravelV2{
-    0%{transform:translateY(130px); opacity:0;}
-    15%{opacity:.75;} 85%{opacity:.75;}
-    100%{transform:translateY(calc(-100vh - 130px)); opacity:0;}
+  @keyframes circuitTravelVR{
+    0%{transform:translateY(140px); opacity:0;}
+    10%{opacity:.75;} 90%{opacity:.75;}
+    100%{transform:translateY(calc(-100vh - 140px)); opacity:0;}
   }
 
   #ambient-hearts-layer{
@@ -2881,10 +2893,14 @@
      Purely additive — no existing id/class/listener above is touched.
      ========================================================================== -->
 <div class="ambient-circuit-canvas" aria-hidden="true">
-  <div class="ambient-circuit-line h1"><div class="ambient-circuit-pulse ph1"></div></div>
-  <div class="ambient-circuit-line h2"><div class="ambient-circuit-pulse ph2"></div></div>
-  <div class="ambient-circuit-line v1"><div class="ambient-circuit-pulse pv1"></div></div>
-  <div class="ambient-circuit-line v2"><div class="ambient-circuit-pulse pv2"></div></div>
+  <div class="ambient-circuit-line h1"><div class="ambient-circuit-pulse pha"></div></div>
+  <div class="ambient-circuit-line h2"><div class="ambient-circuit-pulse phb"></div></div>
+  <div class="ambient-circuit-line h3"><div class="ambient-circuit-pulse pha"></div></div>
+  <div class="ambient-circuit-line h4"><div class="ambient-circuit-pulse phb"></div></div>
+  <div class="ambient-circuit-line v1"><div class="ambient-circuit-pulse pva"></div></div>
+  <div class="ambient-circuit-line v2"><div class="ambient-circuit-pulse pvb"></div></div>
+  <div class="ambient-circuit-line v3"><div class="ambient-circuit-pulse pva"></div></div>
+  <div class="ambient-circuit-line v4"><div class="ambient-circuit-pulse pvb"></div></div>
 </div>
 
 <div id="ambient-hearts-layer" aria-hidden="true"></div>
@@ -2898,7 +2914,7 @@
   if (!container) return;
 
   const HEART_PALETTE = ["💙", "🩵", "🤍", "❤️"];
-  const MAX_CONCURRENT = 18;
+  const MAX_CONCURRENT = 45;
 
   function spawnHeart() {
     if (document.hidden) return;
@@ -2929,8 +2945,8 @@
     container.appendChild(el);
   }
 
-  setTimeout(spawnHeart, 800);
-  setInterval(spawnHeart, 1900);
+  setTimeout(spawnHeart, 400);
+  setInterval(spawnHeart, 350);
 })();
 </script>
 
