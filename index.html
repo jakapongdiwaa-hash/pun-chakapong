@@ -1304,6 +1304,104 @@
     .detail-nextpage:hover, .detail-nextpage:active{transform:translateY(-50%);}
   }
 
+  /* ==========================================================================
+     AMBIENT DECORATIVE LAYER (CIRCUIT GLOW & FLOATING HEARTS)
+     Purely additive — pointer-events:none, negative z-index so it always
+     paints behind every normal page element regardless of local stacking
+     contexts elsewhere on the page (.detail-view, .modal-backdrop, .pcb-*).
+     ========================================================================== */
+
+  .ambient-circuit-canvas{
+    position:fixed; inset:0;
+    pointer-events:none !important;
+    z-index:-2;
+    overflow:hidden;
+  }
+  .ambient-circuit-line{
+    position:absolute;
+    background:rgba(37,99,235,.07);
+    pointer-events:none !important;
+  }
+  .ambient-circuit-line.h1{top:18%; left:0; width:100%; height:1px;}
+  .ambient-circuit-line.h2{top:64%; left:0; width:100%; height:1px;}
+  .ambient-circuit-line.v1{left:8%; top:0; width:1px; height:100%;}
+  .ambient-circuit-line.v2{right:8%; top:0; width:1px; height:100%;}
+  .ambient-circuit-pulse{
+    position:absolute;
+    border-radius:999px;
+    pointer-events:none !important;
+    filter:drop-shadow(0 0 5px var(--gold)) drop-shadow(0 0 10px rgba(37,99,235,.7));
+  }
+  .ambient-circuit-pulse.ph1{
+    top:-1px; left:0; width:110px; height:3px;
+    background:linear-gradient(90deg, transparent, var(--gold) 60%, var(--purple) 85%, transparent);
+    animation:circuitTravelH1 14s ease-in-out infinite alternate;
+  }
+  .ambient-circuit-pulse.ph2{
+    top:-1px; right:0; width:130px; height:3px;
+    background:linear-gradient(90deg, transparent, var(--purple) 25%, var(--gold) 65%, transparent);
+    animation:circuitTravelH2 17s ease-in-out infinite alternate;
+  }
+  .ambient-circuit-pulse.pv1{
+    left:-1px; top:0; width:3px; height:110px;
+    background:linear-gradient(180deg, transparent, var(--gold) 60%, var(--purple) 85%, transparent);
+    animation:circuitTravelV1 15s ease-in-out infinite alternate;
+  }
+  .ambient-circuit-pulse.pv2{
+    left:-1px; bottom:0; width:3px; height:120px;
+    background:linear-gradient(180deg, transparent, var(--purple) 25%, var(--gold) 65%, transparent);
+    animation:circuitTravelV2 19s ease-in-out infinite alternate;
+  }
+  @keyframes circuitTravelH1{
+    0%{transform:translateX(-120px); opacity:0;}
+    12%{opacity:.85;} 88%{opacity:.85;}
+    100%{transform:translateX(calc(100vw + 120px)); opacity:0;}
+  }
+  @keyframes circuitTravelH2{
+    0%{transform:translateX(130px); opacity:0;}
+    12%{opacity:.8;} 88%{opacity:.8;}
+    100%{transform:translateX(calc(-100vw - 130px)); opacity:0;}
+  }
+  @keyframes circuitTravelV1{
+    0%{transform:translateY(-120px); opacity:0;}
+    15%{opacity:.8;} 85%{opacity:.8;}
+    100%{transform:translateY(calc(100vh + 120px)); opacity:0;}
+  }
+  @keyframes circuitTravelV2{
+    0%{transform:translateY(130px); opacity:0;}
+    15%{opacity:.75;} 85%{opacity:.75;}
+    100%{transform:translateY(calc(-100vh - 130px)); opacity:0;}
+  }
+
+  #ambient-hearts-layer{
+    position:fixed; inset:0;
+    pointer-events:none !important;
+    z-index:-1;
+    overflow:hidden;
+  }
+  .ambient-heart-item{
+    position:absolute;
+    bottom:-35px;
+    user-select:none;
+    pointer-events:none !important;
+    will-change:transform, opacity;
+    animation-name:ambientFloatDrift;
+    animation-timing-function:cubic-bezier(.25,.46,.45,.94);
+    animation-fill-mode:forwards;
+  }
+  @keyframes ambientFloatDrift{
+    0%{transform:translateY(0) translateX(0) scale(.65) rotate(0deg); opacity:0; filter:hue-rotate(0deg);}
+    15%{opacity:.8; transform:translateY(-20vh) translateX(var(--drift,18px)) scale(1) rotate(calc(var(--rot,0deg) * .5));}
+    55%{opacity:.75; transform:translateY(-55vh) translateX(calc(var(--drift,18px) * -1)) scale(.95) rotate(var(--rot,0deg));}
+    82%{opacity:.45; filter:hue-rotate(35deg); transform:translateY(-84vh) translateX(calc(var(--drift,18px) * .7)) scale(.75) rotate(calc(var(--rot,0deg) * 1.2));}
+    100%{opacity:0; filter:hue-rotate(60deg); transform:translateY(-106vh) translateX(var(--drift,18px)) scale(.4) rotate(calc(var(--rot,0deg) * 1.5));}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .ambient-circuit-canvas, #ambient-hearts-layer{display:none !important;}
+    .ambient-circuit-pulse, .ambient-heart-item{animation:none !important;}
+  }
+
 </style>
 </head>
 <body>
@@ -2776,6 +2874,64 @@
     });
   });
 
+</script>
+
+<!-- ==========================================================================
+     AMBIENT DECORATIVE LAYER (CIRCUIT GLOW & FLOATING HEARTS)
+     Purely additive — no existing id/class/listener above is touched.
+     ========================================================================== -->
+<div class="ambient-circuit-canvas" aria-hidden="true">
+  <div class="ambient-circuit-line h1"><div class="ambient-circuit-pulse ph1"></div></div>
+  <div class="ambient-circuit-line h2"><div class="ambient-circuit-pulse ph2"></div></div>
+  <div class="ambient-circuit-line v1"><div class="ambient-circuit-pulse pv1"></div></div>
+  <div class="ambient-circuit-line v2"><div class="ambient-circuit-pulse pv2"></div></div>
+</div>
+
+<div id="ambient-hearts-layer" aria-hidden="true"></div>
+
+<script>
+(() => {
+  const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReduced) return;
+
+  const container = document.getElementById("ambient-hearts-layer");
+  if (!container) return;
+
+  const HEART_PALETTE = ["💙", "🩵", "🤍", "❤️"];
+  const MAX_CONCURRENT = 18;
+
+  function spawnHeart() {
+    if (document.hidden) return;
+    if (container.children.length >= MAX_CONCURRENT) return;
+
+    const el = document.createElement("span");
+    el.className = "ambient-heart-item";
+    el.textContent = HEART_PALETTE[Math.floor(Math.random() * HEART_PALETTE.length)];
+
+    const leftPct = (Math.random() * 92 + 4).toFixed(2);
+    const sizePx = (Math.random() * 8 + 14).toFixed(0);
+    const duration = (Math.random() * 3.5 + 5.5).toFixed(2);
+    const drift = ((Math.random() - 0.5) * 60).toFixed(1);
+    const rot = ((Math.random() - 0.5) * 45).toFixed(1);
+
+    el.style.left = `${leftPct}vw`;
+    el.style.fontSize = `${sizePx}px`;
+    el.style.animationDuration = `${duration}s`;
+    el.style.setProperty("--drift", `${drift}px`);
+    el.style.setProperty("--rot", `${rot}deg`);
+
+    const cleanup = () => {
+      el.removeEventListener("animationend", cleanup);
+      if (el.parentNode) el.remove();
+    };
+    el.addEventListener("animationend", cleanup);
+
+    container.appendChild(el);
+  }
+
+  setTimeout(spawnHeart, 800);
+  setInterval(spawnHeart, 1900);
+})();
 </script>
 
 </body>
