@@ -2631,7 +2631,20 @@
         camVideo.srcObject = camStream;
       } catch (err) {
         console.error(err);
-        camMsg.textContent = "เปิดกล้องไม่ได้ กรุณากดอนุญาตให้เว็บใช้กล้อง แล้วลองใหม่";
+        /* บอกสาเหตุให้ตรงกับที่เกิดจริง ไม่งั้นเครื่องที่ไม่มีกล้อง
+           จะถูกสั่งให้ไปกดอนุญาต ซึ่งไม่มีวันขึ้นให้กด */
+        const name = err && err.name;
+        let msg;
+        if (name === "NotFoundError" || name === "DevicesNotFoundError" || name === "OverconstrainedError") {
+          msg = "เครื่องนี้ไม่มีกล้อง ถ่ายจากมือถือแทนได้ หรือกด \"แจ้งลาวันนี้แทน\" ด้านล่าง";
+        } else if (name === "NotAllowedError" || name === "PermissionDeniedError" || name === "SecurityError") {
+          msg = "เว็บยังไม่ได้รับอนุญาตให้ใช้กล้อง กดไอคอนกล้องบนแถบที่อยู่ของเบราว์เซอร์ เลือกอนุญาต แล้วลองใหม่";
+        } else if (name === "NotReadableError" || name === "TrackStartError") {
+          msg = "กล้องถูกโปรแกรมอื่นใช้อยู่ (เช่น Zoom, Meet, Teams) ปิดโปรแกรมนั้นก่อนแล้วลองใหม่";
+        } else {
+          msg = "เปิดกล้องไม่ได้ ลองใหม่อีกครั้ง หรือถ่ายจากมือถือแทน";
+        }
+        camMsg.textContent = msg;
         camMsg.classList.add("error");
         camShootBtn.style.display = "none";
       }
